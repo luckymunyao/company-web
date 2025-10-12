@@ -33,8 +33,10 @@ const Footer: React.FC = () => {
             <a href="#solutions" className="hover:text-white transition-colors duration-300">Solutions</a>
             <a href="#about" className="hover:text-white transition-colors duration-300">About</a>
             <a href="#testimonials" className="hover:text-white transition-colors duration-300">Testimonials</a>
+            <a href="#portfolio" className="hover:text-white transition-colors duration-300">Portfolio</a>
             <a href="#blog" className="hover:text-white transition-colors duration-300">Blog</a>
             <a href="#faq" className="hover:text-white transition-colors duration-300">FAQ</a>
+            <a href="#careers" className="hover:text-white transition-colors duration-300">Careers</a>
             <a href="#contact" className="hover:text-white transition-colors duration-300">Contact</a>
           </nav>
            <div className="flex justify-center gap-4">

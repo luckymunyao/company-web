@@ -1,28 +1,40 @@
 import React from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import SolutionsExplorer from './components/SolutionsExplorer';
+import Services from './components/Services';
 import About from './components/About';
+import SolutionsExplorer from './components/SolutionsExplorer';
+import NeedsAssessment from './components/NeedsAssessment';
+import Portfolio from './components/Portfolio';
 import Testimonials from './components/Testimonials';
 import Blog from './components/Blog';
 import FAQ from './components/FAQ';
+import Careers from './components/Careers';
 import ContactForm from './components/ContactForm';
 import Footer from './components/Footer';
+import Chatbot from './components/Chatbot';
 
 const App: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans">
+    <div className="bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300">
       <Header />
       <main>
         <Hero />
+        {/* The old services component is not displayed in the final layout */}
+        {/* <Services /> */}
         <SolutionsExplorer />
         <About />
+        <Portfolio />
         <Testimonials />
+        {/* AI components are not currently displayed */}
+        {/* <NeedsAssessment /> */}
         <Blog />
         <FAQ />
+        <Careers />
         <ContactForm />
       </main>
       <Footer />
+      <Chatbot />
     </div>
   );
 };

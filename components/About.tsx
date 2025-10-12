@@ -36,8 +36,8 @@ const About: React.FC = () => {
         const elementTop = sectionRef.current.getBoundingClientRect().top;
         const inView = elementTop < window.innerHeight && elementTop > -sectionRef.current.offsetHeight;
         if (inView) {
-          // Increased speed for a more pronounced effect
-          const speed = -0.25;
+          // Decreased speed for a more subtle effect
+          const speed = -0.15;
           setParallaxOffset(elementTop * speed);
         }
       }
@@ -55,7 +55,6 @@ const About: React.FC = () => {
             <img 
               src="https://picsum.photos/600/400?random=1" 
               alt="Our Team" 
-              // Removed competing CSS transition for smoother JS-driven parallax
               className="w-full h-full object-cover"
               style={{ 
                 transform: `scale(1.2) translateY(${parallaxOffset}px)`
@@ -66,13 +65,14 @@ const About: React.FC = () => {
             <h2 className={`text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
               About Ability IT
             </h2>
-            <p className={`text-slate-600 dark:text-slate-400 text-lg mb-6 transition-all duration-700 ease-out delay-150 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+            {/* Adjusted delays for a smoother stagger effect */}
+            <p className={`text-slate-600 dark:text-slate-400 text-lg mb-6 transition-all duration-700 ease-out delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
               We are a team of passionate technology experts dedicated to providing innovative and reliable IT solutions. Our mission is to empower businesses and individuals by making technology accessible, manageable, and a true asset for growth.
             </p>
-            <p className={`text-slate-600 dark:text-slate-400 text-lg mb-6 transition-all duration-700 ease-out delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+            <p className={`text-slate-600 dark:text-slate-400 text-lg mb-6 transition-all duration-700 ease-out delay-400 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
               With years of experience across various industries, we pride ourselves on our customer-centric approach, tailoring our services to meet your specific challenges and goals. Your success is our success.
             </p>
-            <div className={`transition-all duration-700 ease-out delay-[450ms] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+            <div className={`transition-all duration-700 ease-out delay-600 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
               <a href="#contact" className="inline-block bg-indigo-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md">
                 Learn More
               </a>

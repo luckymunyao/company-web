@@ -4,9 +4,16 @@ export interface Service {
   title: string;
   description: string;
   icon: React.ReactNode;
-  category: 'Security & Infrastructure' | 'Growth & Marketing' | 'Development & Training' | 'Business Strategy';
+  category: string;
   keyBenefits: string[];
   includes: string[];
+}
+
+export interface Testimonial {
+  quote: string;
+  name: string;
+  company: string;
+  avatarUrl: string;
 }
 
 export interface BlogPost {
@@ -21,9 +28,18 @@ export interface BlogPost {
   date: string;
 }
 
-export interface Testimonial {
-  quote: string;
-  name: string;
-  company: string;
-  avatarUrl: string;
+export interface Project {
+  title: string;
+  client: string;
+  description: string;
+  imageUrl: string;
+  tags: string[];
+}
+
+export interface JobOpening {
+    title: string;
+    location: string;
+    type: 'Full-time' | 'Part-time' | 'Contract';
+    description: string;
+    department: 'Engineering' | 'Marketing' | 'Sales' | 'Support';
 }

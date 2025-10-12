@@ -1,34 +1,7 @@
 import React, { useState } from 'react';
+import { faqData } from '../data/content';
 import PlusIcon from './icons/PlusIcon';
 import MinusIcon from './icons/MinusIcon';
-
-interface FAQItem {
-  question: string;
-  answer: string;
-}
-
-const faqData: FAQItem[] = [
-  {
-    question: 'How quickly can I expect a response for a support request?',
-    answer: 'Our standard response time for non-critical issues is within 4 business hours. For critical, system-down emergencies, we guarantee a response within 1 hour. We prioritize getting your operations back to normal as quickly as possible.',
-  },
-  {
-    question: 'What industries do you specialize in?',
-    answer: 'We have extensive experience across a wide range of industries, including finance (FinTech), marketing, e-commerce, and professional services. Our adaptable solutions are tailored to meet the unique compliance and operational needs of each sector.',
-  },
-  {
-    question: 'Do you offer custom software development services?',
-    answer: 'Yes, absolutely. Our in-house development team specializes in creating bespoke software solutions, from custom web applications to enterprise-level systems, designed to solve your unique business challenges and streamline your processes.',
-  },
-  {
-    question: 'How do you approach cybersecurity for a new client?',
-    answer: 'Our process begins with a comprehensive security audit and vulnerability assessment to identify weaknesses. Based on our findings, we develop a multi-layered security strategy that includes network protection, data encryption, employee training, and proactive threat monitoring.',
-  },
-  {
-    question: 'What are your pricing models?',
-    answer: 'We offer flexible pricing models to suit different needs. For ongoing support, we have predictable monthly retainers for our Managed IT Services. For specific projects like software development or consulting, we provide a detailed, fixed-price quote after an initial discovery phase.',
-  },
-];
 
 const FAQ: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);

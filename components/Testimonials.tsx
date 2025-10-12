@@ -3,6 +3,7 @@ import type { Testimonial } from '../types';
 import QuoteIcon from './icons/QuoteIcon';
 import ChevronLeftIcon from './icons/ChevronLeftIcon';
 import ChevronRightIcon from './icons/ChevronRightIcon';
+import TestimonialSkeleton from './TestimonialSkeleton';
 
 const testimonialsData: Testimonial[] = [
   {
@@ -27,7 +28,15 @@ const testimonialsData: Testimonial[] = [
 
 const Testimonials: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500); // Simulate loading delay
+    return () => clearTimeout(timer);
+  }, []);
 
   const resetTimeout = useCallback(() => {
     if (timeoutRef.current) {
@@ -52,15 +61,17 @@ const Testimonials: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isLoading) return; // Don't start autoplay if loading
     resetTimeout();
     timeoutRef.current = setTimeout(nextSlide, 5000); // Autoplay every 5 seconds
     return () => {
       resetTimeout();
     };
-  }, [currentIndex, nextSlide, resetTimeout]);
+  }, [currentIndex, nextSlide, resetTimeout, isLoading]);
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (isLoading) return; // Ignore key events while loading
       if (event.key === 'ArrowLeft') {
         prevSlide();
       } else if (event.key === 'ArrowRight') {
@@ -71,13 +82,14 @@ const Testimonials: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [prevSlide, nextSlide]);
+  }, [prevSlide, nextSlide, isLoading]);
 
   const handleMouseEnter = () => {
     resetTimeout();
   };
 
   const handleMouseLeave = () => {
+    if (isLoading) return; // Don't restart autoplay if loading
     resetTimeout();
     timeoutRef.current = setTimeout(nextSlide, 5000);
   };
@@ -91,64 +103,68 @@ const Testimonials: React.FC = () => {
             We are proud to partner with businesses that trust our expertise and commitment to excellence.
           </p>
         </div>
-        <div 
-          className="max-w-3xl mx-auto relative group"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className="overflow-hidden relative h-[380px] sm:h-[320px]">
-            <div
-              className="flex transition-transform ease-in-out duration-500"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-            >
-              {testimonialsData.map((testimonial, index) => (
-                <div key={index} className="w-full flex-shrink-0 p-4">
-                  <div className="bg-slate-50 dark:bg-slate-800 p-8 rounded-xl shadow-lg flex flex-col h-full justify-between">
-                    <div className="mb-6">
-                      <QuoteIcon />
-                      <p className="text-slate-600 dark:text-slate-400 italic mt-4">"{testimonial.quote}"</p>
-                    </div>
-                    <div className="flex items-center">
-                      <img src={testimonial.avatarUrl} alt={testimonial.name} className="w-14 h-14 rounded-full mr-4 border-2 border-indigo-200 dark:border-indigo-800" />
-                      <div>
-                        <p className="font-bold text-slate-800 dark:text-slate-200">{testimonial.name}</p>
-                        <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">{testimonial.company}</p>
+        {isLoading ? (
+          <TestimonialSkeleton />
+        ) : (
+          <div 
+            className="max-w-3xl mx-auto relative group"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div className="overflow-hidden relative h-[380px] sm:h-[320px]">
+              <div
+                className="flex transition-transform ease-in-out duration-500"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
+                {testimonialsData.map((testimonial, index) => (
+                  <div key={index} className="w-full flex-shrink-0 p-4">
+                    <div className="bg-slate-50 dark:bg-slate-800 p-8 rounded-xl shadow-lg flex flex-col h-full justify-between">
+                      <div className="mb-6">
+                        <QuoteIcon />
+                        <p className="text-slate-600 dark:text-slate-400 italic mt-4">"{testimonial.quote}"</p>
+                      </div>
+                      <div className="flex items-center">
+                        <img src={testimonial.avatarUrl} alt={testimonial.name} className="w-14 h-14 rounded-full mr-4 border-2 border-indigo-200 dark:border-indigo-800" />
+                        <div>
+                          <p className="font-bold text-slate-800 dark:text-slate-200">{testimonial.name}</p>
+                          <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">{testimonial.company}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                ))}
+              </div>
+            </div>
+            {/* Left Arrow */}
+            <button
+              onClick={prevSlide}
+              className="absolute top-1/2 -translate-y-1/2 left-0 sm:-left-12 transform bg-white/50 hover:bg-white dark:bg-slate-700/50 dark:hover:bg-slate-600 rounded-full p-2 text-slate-600 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 shadow-md opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              aria-label="Previous testimonial"
+            >
+              <ChevronLeftIcon />
+            </button>
+            {/* Right Arrow */}
+            <button
+              onClick={nextSlide}
+              className="absolute top-1/2 -translate-y-1/2 right-0 sm:-right-12 transform bg-white/50 hover:bg-white dark:bg-slate-700/50 dark:hover:bg-slate-600 rounded-full p-2 text-slate-600 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 shadow-md opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              aria-label="Next testimonial"
+            >
+              <ChevronRightIcon />
+            </button>
+            <div className="flex items-center justify-center gap-2 pt-6">
+              {testimonialsData.map((_, slideIndex) => (
+                <button
+                  key={slideIndex}
+                  onClick={() => goToSlide(slideIndex)}
+                  className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+                    currentIndex === slideIndex ? 'bg-indigo-600 dark:bg-indigo-500' : 'bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500'
+                  }`}
+                  aria-label={`Go to slide ${slideIndex + 1}`}
+                ></button>
               ))}
             </div>
           </div>
-          {/* Left Arrow */}
-          <button
-            onClick={prevSlide}
-            className="absolute top-1/2 -translate-y-1/2 left-0 sm:-left-12 transform bg-white/50 hover:bg-white dark:bg-slate-700/50 dark:hover:bg-slate-600 rounded-full p-2 text-slate-600 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 shadow-md opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            aria-label="Previous testimonial"
-          >
-            <ChevronLeftIcon />
-          </button>
-          {/* Right Arrow */}
-          <button
-            onClick={nextSlide}
-            className="absolute top-1/2 -translate-y-1/2 right-0 sm:-right-12 transform bg-white/50 hover:bg-white dark:bg-slate-700/50 dark:hover:bg-slate-600 rounded-full p-2 text-slate-600 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 shadow-md opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            aria-label="Next testimonial"
-          >
-            <ChevronRightIcon />
-          </button>
-          <div className="flex items-center justify-center gap-2 pt-6">
-            {testimonialsData.map((_, slideIndex) => (
-              <button
-                key={slideIndex}
-                onClick={() => goToSlide(slideIndex)}
-                className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                  currentIndex === slideIndex ? 'bg-indigo-600 dark:bg-indigo-500' : 'bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500'
-                }`}
-                aria-label={`Go to slide ${slideIndex + 1}`}
-              ></button>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );
