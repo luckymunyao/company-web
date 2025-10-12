@@ -34,16 +34,17 @@ const Footer: React.FC = () => {
             <a href="#about" className="hover:text-white transition-colors duration-300">About</a>
             <a href="#testimonials" className="hover:text-white transition-colors duration-300">Testimonials</a>
             <a href="#blog" className="hover:text-white transition-colors duration-300">Blog</a>
+            <a href="#faq" className="hover:text-white transition-colors duration-300">FAQ</a>
             <a href="#contact" className="hover:text-white transition-colors duration-300">Contact</a>
           </nav>
            <div className="flex justify-center gap-4">
-            <a href="#" className="hover:text-white transition-colors duration-300" aria-label="Twitter">
+            <a href="#" className="hover:text-white transition-colors duration-300" aria-label="Twitter" title="Visit our Twitter page">
               <TwitterIcon />
             </a>
-            <a href="#" className="hover:text-white transition-colors duration-300" aria-label="LinkedIn">
+            <a href="#" className="hover:text-white transition-colors duration-300" aria-label="LinkedIn" title="Visit our LinkedIn page">
               <LinkedInIcon />
             </a>
-            <a href="#" className="hover:text-white transition-colors duration-300" aria-label="Facebook">
+            <a href="#" className="hover:text-white transition-colors duration-300" aria-label="Facebook" title="Visit our Facebook page">
               <FacebookIcon />
             </a>
           </div>

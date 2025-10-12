@@ -2,9 +2,20 @@ import React, { useState, useEffect } from 'react';
 import SunIcon from './icons/SunIcon';
 import MoonIcon from './icons/MoonIcon';
 
+const navLinks = [
+  { href: '#home', label: 'Home' },
+  { href: '#solutions', label: 'Solutions' },
+  { href: '#about', label: 'About' },
+  { href: '#testimonials', label: 'Testimonials' },
+  { href: '#blog', label: 'Blog' },
+  { href: '#faq', label: 'FAQ' },
+  { href: '#contact', label: 'Contact' },
+];
+
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -16,19 +27,38 @@ const Header: React.FC = () => {
       localStorage.setItem('theme', 'light');
     }
   }, [theme]);
+  
+  useEffect(() => {
+    const sections = navLinks.map(link => document.querySelector(link.href));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: '-80px 0px -50% 0px',
+        threshold: 0,
+      }
+    );
+
+    sections.forEach(section => {
+      if (section) observer.observe(section);
+    });
+
+    return () => {
+      sections.forEach(section => {
+        if (section) observer.unobserve(section);
+      });
+    };
+  }, []);
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
-
-  const navLinks = [
-    { href: '#home', label: 'Home' },
-    { href: '#solutions', label: 'Solutions' },
-    { href: '#about', label: 'About' },
-    { href: '#testimonials', label: 'Testimonials' },
-    { href: '#blog', label: 'Blog' },
-    { href: '#contact', label: 'Contact' },
-  ];
 
   return (
     <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
@@ -38,7 +68,15 @@ const Header: React.FC = () => {
         </a>
         <nav className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300 font-medium">
+            <a 
+              key={link.href} 
+              href={link.href} 
+              className={`transition-all duration-300 ${
+                activeSection === link.href.substring(1)
+                  ? 'font-semibold text-indigo-600 dark:text-indigo-400'
+                  : 'font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+              }`}
+            >
               {link.label}
             </a>
           ))}
@@ -66,7 +104,15 @@ const Header: React.FC = () => {
         <div className="md:hidden bg-white dark:bg-slate-800">
           <nav className="px-6 pt-2 pb-4 flex flex-col space-y-2">
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 block py-2 rounded-md text-base font-medium" onClick={() => setIsMenuOpen(false)}>
+              <a 
+                key={link.href} 
+                href={link.href} 
+                className={`block py-2 rounded-md text-base transition-colors duration-300 ${
+                  activeSection === link.href.substring(1)
+                    ? 'font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-slate-700'
+                    : 'font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}
+                onClick={() => setIsMenuOpen(false)}>
                 {link.label}
               </a>
             ))}

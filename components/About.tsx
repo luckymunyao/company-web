@@ -36,7 +36,8 @@ const About: React.FC = () => {
         const elementTop = sectionRef.current.getBoundingClientRect().top;
         const inView = elementTop < window.innerHeight && elementTop > -sectionRef.current.offsetHeight;
         if (inView) {
-          const speed = -0.15;
+          // Increased speed for a more pronounced effect
+          const speed = -0.25;
           setParallaxOffset(elementTop * speed);
         }
       }
@@ -54,7 +55,8 @@ const About: React.FC = () => {
             <img 
               src="https://picsum.photos/600/400?random=1" 
               alt="Our Team" 
-              className="w-full h-full object-cover transition-transform duration-100 ease-out"
+              // Removed competing CSS transition for smoother JS-driven parallax
+              className="w-full h-full object-cover"
               style={{ 
                 transform: `scale(1.2) translateY(${parallaxOffset}px)`
               }}

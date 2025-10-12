@@ -12,6 +12,7 @@ import SocialMediaIcon from './icons/SocialMediaIcon';
 import TutorIcon from './icons/TutorIcon';
 import CheckIcon from './icons/CheckIcon';
 import ExternalLinkIcon from './icons/ExternalLinkIcon';
+import ArrowRightIcon from './icons/ArrowRightIcon';
 
 const servicesData: Service[] = [
   {
@@ -220,8 +221,11 @@ const SolutionsExplorer: React.FC = () => {
                         </div>
                     </div>
                     
-                    <a href="#contact" className="inline-block bg-indigo-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md active:scale-95">
-                        Get a Quote for this Service
+                    <a href="#contact" className="group inline-flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md active:scale-95">
+                        <span>Get a Quote for this Service</span>
+                        <span className="transition-transform duration-300 group-hover:translate-x-1">
+                            <ArrowRightIcon />
+                        </span>
                     </a>
                 </div>
             </div>
