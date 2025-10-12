@@ -27,9 +27,3 @@ export interface Testimonial {
   company: string;
   avatarUrl: string;
 }
-
-// Fix: Add ChatMessage interface for the AI consultant chat component.
-export interface ChatMessage {
-  role: 'user' | 'model';
-  content: string;
-}

@@ -83,11 +83,11 @@ const Testimonials: React.FC = () => {
   };
 
   return (
-    <section id="testimonials" className="py-20 bg-white">
+    <section id="testimonials" className="py-20 bg-white dark:bg-slate-950">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900">What Our Clients Say</h2>
-          <p className="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">What Our Clients Say</h2>
+          <p className="text-lg text-slate-600 dark:text-slate-400 mt-4 max-w-2xl mx-auto">
             We are proud to partner with businesses that trust our expertise and commitment to excellence.
           </p>
         </div>
@@ -98,21 +98,21 @@ const Testimonials: React.FC = () => {
         >
           <div className="overflow-hidden relative h-[380px] sm:h-[320px]">
             <div
-              className="flex transition-transform ease-in-out duration-700"
+              className="flex transition-transform ease-in-out duration-500"
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
               {testimonialsData.map((testimonial, index) => (
                 <div key={index} className="w-full flex-shrink-0 p-4">
-                  <div className="bg-slate-50 p-8 rounded-xl shadow-lg flex flex-col h-full justify-between">
+                  <div className="bg-slate-50 dark:bg-slate-800 p-8 rounded-xl shadow-lg flex flex-col h-full justify-between">
                     <div className="mb-6">
                       <QuoteIcon />
-                      <p className="text-slate-600 italic mt-4">"{testimonial.quote}"</p>
+                      <p className="text-slate-600 dark:text-slate-400 italic mt-4">"{testimonial.quote}"</p>
                     </div>
                     <div className="flex items-center">
-                      <img src={testimonial.avatarUrl} alt={testimonial.name} className="w-14 h-14 rounded-full mr-4 border-2 border-indigo-200" />
+                      <img src={testimonial.avatarUrl} alt={testimonial.name} className="w-14 h-14 rounded-full mr-4 border-2 border-indigo-200 dark:border-indigo-800" />
                       <div>
-                        <p className="font-bold text-slate-800">{testimonial.name}</p>
-                        <p className="text-sm text-indigo-600 font-medium">{testimonial.company}</p>
+                        <p className="font-bold text-slate-800 dark:text-slate-200">{testimonial.name}</p>
+                        <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">{testimonial.company}</p>
                       </div>
                     </div>
                   </div>
@@ -123,7 +123,7 @@ const Testimonials: React.FC = () => {
           {/* Left Arrow */}
           <button
             onClick={prevSlide}
-            className="absolute top-1/2 -translate-y-1/2 left-0 sm:-left-12 transform bg-white/50 hover:bg-white rounded-full p-2 text-slate-600 hover:text-indigo-600 transition-all duration-300 shadow-md opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="absolute top-1/2 -translate-y-1/2 left-0 sm:-left-12 transform bg-white/50 hover:bg-white dark:bg-slate-700/50 dark:hover:bg-slate-600 rounded-full p-2 text-slate-600 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 shadow-md opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             aria-label="Previous testimonial"
           >
             <ChevronLeftIcon />
@@ -131,7 +131,7 @@ const Testimonials: React.FC = () => {
           {/* Right Arrow */}
           <button
             onClick={nextSlide}
-            className="absolute top-1/2 -translate-y-1/2 right-0 sm:-right-12 transform bg-white/50 hover:bg-white rounded-full p-2 text-slate-600 hover:text-indigo-600 transition-all duration-300 shadow-md opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="absolute top-1/2 -translate-y-1/2 right-0 sm:-right-12 transform bg-white/50 hover:bg-white dark:bg-slate-700/50 dark:hover:bg-slate-600 rounded-full p-2 text-slate-600 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 shadow-md opacity-0 group-hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             aria-label="Next testimonial"
           >
             <ChevronRightIcon />
@@ -142,7 +142,7 @@ const Testimonials: React.FC = () => {
                 key={slideIndex}
                 onClick={() => goToSlide(slideIndex)}
                 className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                  currentIndex === slideIndex ? 'bg-indigo-600' : 'bg-slate-300 hover:bg-slate-400'
+                  currentIndex === slideIndex ? 'bg-indigo-600 dark:bg-indigo-500' : 'bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500'
                 }`}
                 aria-label={`Go to slide ${slideIndex + 1}`}
               ></button>

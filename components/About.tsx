@@ -47,7 +47,7 @@ const About: React.FC = () => {
   }, []);
 
   return (
-    <section id="about" ref={sectionRef} className="py-20 bg-white overflow-hidden">
+    <section id="about" ref={sectionRef} className="py-20 bg-white dark:bg-slate-950 overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2 h-80 md:h-auto rounded-lg shadow-2xl overflow-hidden">
@@ -61,13 +61,13 @@ const About: React.FC = () => {
             />
           </div>
           <div className="md:w-1/2">
-            <h2 className={`text-3xl md:text-4xl font-bold text-slate-900 mb-4 transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+            <h2 className={`text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
               About Ability IT
             </h2>
-            <p className={`text-slate-600 text-lg mb-6 transition-all duration-700 ease-out delay-150 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+            <p className={`text-slate-600 dark:text-slate-400 text-lg mb-6 transition-all duration-700 ease-out delay-150 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
               We are a team of passionate technology experts dedicated to providing innovative and reliable IT solutions. Our mission is to empower businesses and individuals by making technology accessible, manageable, and a true asset for growth.
             </p>
-            <p className={`text-slate-600 text-lg mb-6 transition-all duration-700 ease-out delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+            <p className={`text-slate-600 dark:text-slate-400 text-lg mb-6 transition-all duration-700 ease-out delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
               With years of experience across various industries, we pride ourselves on our customer-centric approach, tailoring our services to meet your specific challenges and goals. Your success is our success.
             </p>
             <div className={`transition-all duration-700 ease-out delay-[450ms] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>

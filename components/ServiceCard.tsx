@@ -41,16 +41,16 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => {
     <a 
       href="#contact"
       ref={cardRef}
-      className={`group bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-700 ease-out transform flex flex-col items-center text-center ${
+      className={`group bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-700 ease-out transform flex flex-col items-center text-center ${
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
       }`}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
-      <div className="bg-indigo-100 text-indigo-600 rounded-full p-4 mb-6 transition-colors duration-300 group-hover:bg-indigo-200">
+      <div className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full p-4 mb-6 transition-colors duration-300 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800/50">
         {service.icon}
       </div>
-      <h3 className="text-xl font-bold text-slate-900 mb-3 transition-colors duration-300 group-hover:text-indigo-600">{service.title}</h3>
-      <p className="text-slate-600 leading-relaxed">{service.description}</p>
+      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 transition-colors duration-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{service.title}</h3>
+      <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{service.description}</p>
     </a>
   );
 };
