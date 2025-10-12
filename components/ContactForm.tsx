@@ -3,6 +3,8 @@ import ChevronDownIcon from './icons/ChevronDownIcon';
 import CheckCircleIcon from './icons/CheckCircleIcon';
 import XCircleIcon from './icons/XCircleIcon';
 import UploadIcon from './icons/UploadIcon';
+import PhoneIcon from './icons/PhoneIcon';
+import WhatsAppIcon from './icons/WhatsAppIcon';
 
 const serviceOptions = [
     'Cybersecurity Solutions',
@@ -155,6 +157,16 @@ const ContactForm: React.FC = () => {
             <p className="text-lg text-slate-600 dark:text-slate-400 mt-4">
               Have a question or a project in mind? We'd love to hear from you.
             </p>
+            <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 text-slate-600 dark:text-slate-400">
+                <a href="tel:+254798996332" className="flex items-center gap-3 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300 text-lg">
+                    <PhoneIcon />
+                    <span className="font-semibold">+254 798 996332</span>
+                </a>
+                <a href="https://wa.me/254798996332" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-green-500 dark:hover:text-green-400 transition-colors duration-300 text-lg">
+                    <WhatsAppIcon />
+                    <span className="font-semibold">Message on WhatsApp</span>
+                </a>
+            </div>
           </div>
           <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-xl shadow-lg space-y-6" noValidate>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

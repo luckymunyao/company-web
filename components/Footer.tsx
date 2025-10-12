@@ -1,4 +1,6 @@
 import React from 'react';
+import PhoneIcon from './icons/PhoneIcon';
+import WhatsAppIcon from './icons/WhatsAppIcon';
 
 const TwitterIcon = () => (
   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -27,6 +29,14 @@ const Footer: React.FC = () => {
           <div className="text-center md:text-left">
             <p className="text-lg font-semibold text-white">Ability IT</p>
             <p className="text-sm">&copy; {new Date().getFullYear()} All Rights Reserved.</p>
+            <div className="mt-4">
+                <a href="tel:+254798996332" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors text-sm">
+                    <div className="h-4 w-4 flex items-center justify-center">
+                        <PhoneIcon />
+                    </div>
+                    <span>+254 798 996332</span>
+                </a>
+            </div>
           </div>
           <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 order-last md:order-none">
             <a href="#home" className="hover:text-white transition-colors duration-300">Home</a>
@@ -48,6 +58,9 @@ const Footer: React.FC = () => {
             </a>
             <a href="#" className="hover:text-white transition-colors duration-300" aria-label="Facebook" title="Visit our Facebook page">
               <FacebookIcon />
+            </a>
+            <a href="https://wa.me/254798996332" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300" aria-label="WhatsApp" title="Message us on WhatsApp">
+                <WhatsAppIcon />
             </a>
           </div>
         </div>

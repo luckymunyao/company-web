@@ -59,7 +59,11 @@ const Chatbot: React.FC = () => {
         setMessages([
           { 
             sender: 'bot', 
-            text: "Hello there! I'm the Ability IT virtual assistant. I can answer questions about our services like Cybersecurity, Managed IT, and more. What can I help you find?",
+            text: "Hello there! 👋",
+          },
+          { 
+            sender: 'bot', 
+            text: "I'm the Ability IT virtual assistant. I can answer questions about our services like Cybersecurity, Managed IT, and more. What can I help you find?",
             quickReplies: ['What is managed IT?', 'Cybersecurity services', 'Custom software solutions'] 
           }
         ]);

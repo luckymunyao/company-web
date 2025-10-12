@@ -4,9 +4,11 @@ import Hero from './components/Hero';
 import Services from './components/Services';
 import About from './components/About';
 import SolutionsExplorer from './components/SolutionsExplorer';
+import Cybersecurity from './components/Cybersecurity';
 import NeedsAssessment from './components/NeedsAssessment';
 import Portfolio from './components/Portfolio';
 import Testimonials from './components/Testimonials';
+import AIChatAssistant from './components/AIChatAssistant';
 import Blog from './components/Blog';
 import FAQ from './components/FAQ';
 import Careers from './components/Careers';
@@ -23,9 +25,11 @@ const App: React.FC = () => {
         {/* The old services component is not displayed in the final layout */}
         {/* <Services /> */}
         <SolutionsExplorer />
+        <Cybersecurity />
         <About />
         <Portfolio />
         <Testimonials />
+        <AIChatAssistant />
         {/* AI components are not currently displayed */}
         {/* <NeedsAssessment /> */}
         <Blog />
