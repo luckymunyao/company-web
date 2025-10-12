@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI, Chat } from '@google/genai';
+import { GoogleGenAI, Chat, Type } from '@google/genai';
 import ChatBubbleIcon from './icons/ChatBubbleIcon';
 import PaperAirplaneIcon from './icons/PaperAirplaneIcon';
 import XIcon from './icons/XIcon';
@@ -8,7 +8,27 @@ import BotIcon from './icons/BotIcon';
 interface Message {
   text: string;
   sender: 'user' | 'bot';
+  quickReplies?: string[];
 }
+
+const responseSchema = {
+  type: Type.OBJECT,
+  properties: {
+    response: {
+      type: Type.STRING,
+      description: "The main text response to the user's query."
+    },
+    quickReplies: {
+      type: Type.ARRAY,
+      description: "A list of 3-4 suggested, short follow-up questions or topics.",
+      items: {
+        type: Type.STRING
+      }
+    }
+  },
+  required: ['response', 'quickReplies']
+};
+
 
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +37,8 @@ const Chatbot: React.FC = () => {
   const [input, setInput] = useState('');
   const chatRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     if (isOpen && !chatRef.current) {
@@ -28,11 +50,18 @@ const Chatbot: React.FC = () => {
             systemInstruction: `You are a helpful and friendly AI assistant for Ability IT, a technology services company.
             Your role is to answer user questions about the company's services, provide information, and guide them to the right sections of the website.
             Keep your answers concise, professional, and helpful. You should be knowledgeable about cybersecurity, managed IT services, software development, digital marketing, data analysis, and other services offered by Ability IT.
-            If a user asks a question outside of your scope, politely state that you are an assistant for Ability IT and can only answer questions related to its business.`,
+            If a user asks a question outside of your scope, politely state that you are an assistant for Ability IT and can only answer questions related to its business.
+            IMPORTANT: Your response MUST strictly be in JSON format, adhering to this schema: {"response": string, "quickReplies": string[]}. The 'response' field should contain your conversational reply. The 'quickReplies' field should contain an array of 3-4 relevant, short (1-4 word) follow-up questions or topics a user might be interested in based on your response.`,
+            responseMimeType: "application/json",
+            responseSchema: responseSchema,
           },
         });
         setMessages([
-          { sender: 'bot', text: "Hello! I'm the Ability IT assistant. How can I help you today?" }
+          { 
+            sender: 'bot', 
+            text: "Hello there! I'm the Ability IT virtual assistant. I can answer questions about our services like Cybersecurity, Managed IT, and more. What can I help you find?",
+            quickReplies: ['What is managed IT?', 'Cybersecurity services', 'Custom software solutions'] 
+          }
         ]);
       } catch (error) {
         console.error("Failed to initialize Gemini API:", error);
@@ -45,29 +74,53 @@ const Chatbot: React.FC = () => {
   
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isLoading]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading || !chatRef.current) return;
+  const submitMessage = async (messageText: string) => {
+    if (!messageText.trim() || isLoading || !chatRef.current) return;
 
-    const userMessage: Message = { text: input, sender: 'user' };
+    const userMessage: Message = { text: messageText, sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
-    setInput('');
     setIsLoading(true);
+    setInput('');
+
+    let botResponse: Message;
 
     try {
-      const response = await chatRef.current.sendMessage({ message: input });
-      const botMessage: Message = { text: response.text, sender: 'bot' };
-      setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
-      console.error("Gemini API error:", error);
-      const errorMessage: Message = { text: "I'm sorry, but I encountered an error. Please try again.", sender: 'bot' };
-      setMessages(prev => [...prev, errorMessage]);
+      const response = await chatRef.current.sendMessage({ message: messageText });
+      const responseText = response.text;
+      
+      try {
+        const json = JSON.parse(responseText);
+        botResponse = {
+          sender: 'bot',
+          text: json.response || "I'm not sure how to answer that.",
+          quickReplies: json.quickReplies || [],
+        };
+      } catch (jsonError) {
+        console.warn("Could not parse Gemini response as JSON. Using raw text.", jsonError);
+        botResponse = {
+          sender: 'bot',
+          text: responseText,
+          quickReplies: [],
+        };
+      }
+    } catch (apiError) {
+      console.error("Gemini API error:", apiError);
+      botResponse = { text: "I'm sorry, but I encountered an error. Please try again.", sender: 'bot' };
     } finally {
-      setIsLoading(false);
+        setMessages(prev => [...prev, botResponse]);
+        setIsLoading(false);
     }
   };
+  
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitMessage(input);
+  };
+  
+  const lastMessage = messages[messages.length - 1];
+  const showQuickReplies = lastMessage?.sender === 'bot' && lastMessage.quickReplies && lastMessage.quickReplies.length > 0 && !isLoading;
 
   return (
     <>
@@ -92,38 +145,54 @@ const Chatbot: React.FC = () => {
           <h3 className="text-lg font-bold text-slate-800 dark:text-white text-center">Ability IT AI Assistant</h3>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((msg, index) => (
-            <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              {msg.sender === 'bot' && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center"><BotIcon /></div>}
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                  msg.sender === 'user'
-                    ? 'bg-indigo-600 text-white rounded-br-none'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-bl-none'
-                }`}
-              >
-                <p className="text-sm break-words">{msg.text}</p>
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex items-start gap-3 justify-start">
-               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center"><BotIcon /></div>
-               <div className="max-w-[80%] rounded-2xl px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-bl-none">
-                <div className="flex items-center space-x-1">
-                  <span className="h-2 w-2 bg-slate-400 rounded-full animate-pulse [animation-delay:-0.3s]"></span>
-                  <span className="h-2 w-2 bg-slate-400 rounded-full animate-pulse [animation-delay:-0.15s]"></span>
-                  <span className="h-2 w-2 bg-slate-400 rounded-full animate-pulse"></span>
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-4">
+            {messages.map((msg, index) => (
+              <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {msg.sender === 'bot' && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center"><BotIcon /></div>}
+                <div
+                  className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+                    msg.sender === 'user'
+                      ? 'bg-indigo-600 text-white rounded-br-none'
+                      : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-bl-none'
+                  }`}
+                >
+                  <p className="text-sm break-words whitespace-pre-wrap">{msg.text}</p>
                 </div>
               </div>
+            ))}
+            {isLoading && (
+              <div className="flex items-start gap-3 justify-start">
+                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center"><BotIcon /></div>
+                 <div className="max-w-[80%] rounded-2xl px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-bl-none">
+                  <div className="flex items-center space-x-1">
+                    <span className="h-2 w-2 bg-slate-400 rounded-full animate-pulse [animation-delay:-0.3s]"></span>
+                    <span className="h-2 w-2 bg-slate-400 rounded-full animate-pulse [animation-delay:-0.15s]"></span>
+                    <span className="h-2 w-2 bg-slate-400 rounded-full animate-pulse"></span>
+                  </div>
+                </div>
+              </div>
+            )}
+             <div ref={messagesEndRef} />
+          </div>
+           {showQuickReplies && (
+            <div className="mt-4 flex flex-wrap justify-start gap-2 animate-fade-in-short">
+              {lastMessage.quickReplies!.map((reply, i) => (
+                <button
+                  key={i}
+                  onClick={() => submitMessage(reply)}
+                  disabled={isLoading}
+                  className="px-3 py-1.5 text-sm font-medium text-indigo-700 bg-indigo-100 rounded-full hover:bg-indigo-200 dark:bg-indigo-900/50 dark:text-indigo-300 dark:hover:bg-indigo-900/80 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {reply}
+                </button>
+              ))}
             </div>
           )}
-           <div ref={messagesEndRef} />
         </div>
         
         <div className="flex-shrink-0 border-t border-slate-200 dark:border-slate-700 p-2">
-          <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+          <form onSubmit={handleFormSubmit} className="flex items-center gap-2">
             <input
               type="text"
               value={input}
@@ -144,6 +213,15 @@ const Chatbot: React.FC = () => {
           </form>
         </div>
       </div>
+       <style>{`
+        @keyframes fade-in-short {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-short {
+          animation: fade-in-short 0.5s ease-out forwards;
+        }
+      `}</style>
     </>
   );
 };
