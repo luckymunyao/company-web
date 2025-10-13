@@ -53,7 +53,11 @@ const About: React.FC = () => {
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2 h-80 md:h-auto rounded-lg shadow-2xl overflow-hidden">
             <img 
-              src="https://picsum.photos/600/400?random=1" 
+              src="https://picsum.photos/800/533?random=1" 
+              srcSet="https://picsum.photos/400/267?random=1 400w, https://picsum.photos/800/533?random=1 800w, https://picsum.photos/1200/800?random=1 1200w"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              loading="lazy"
+              decoding="async"
               alt="Our Team" 
               className="w-full h-full object-cover"
               style={{ 

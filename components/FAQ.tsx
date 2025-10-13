@@ -26,6 +26,7 @@ const FAQ: React.FC = () => {
                 onClick={() => toggleFAQ(index)}
                 className="w-full flex justify-between items-center text-left py-4 focus:outline-none"
                 aria-expanded={openIndex === index}
+                aria-controls={`faq-answer-${index}`}
               >
                 <span className="text-lg font-semibold text-slate-800 dark:text-slate-200">{item.question}</span>
                 <span className="text-indigo-600 dark:text-indigo-400 transition-transform duration-300">
@@ -33,6 +34,9 @@ const FAQ: React.FC = () => {
                 </span>
               </button>
               <div
+                id={`faq-answer-${index}`}
+                role="region"
+                aria-labelledby={`faq-question-${index}`}
                 className={`overflow-hidden transition-all duration-500 ease-in-out ${
                   openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                 }`}

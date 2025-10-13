@@ -9,7 +9,15 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
   return (
     <a href="#" className="group block bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-in-out overflow-hidden">
       <div className="relative">
-        <img src={post.imageUrl} alt={post.title} className="w-full h-48 object-cover" />
+        <img 
+          src={`${post.imageUrl}/400/250`} 
+          srcSet={`${post.imageUrl}/400/250 400w, ${post.imageUrl}/800/500 800w`}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          loading="lazy"
+          decoding="async"
+          alt={post.title} 
+          className="w-full h-48 object-cover" 
+        />
       </div>
       <div className="p-6">
         <span className="inline-block bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-400 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-4">{post.category}</span>

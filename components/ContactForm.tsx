@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChevronDownIcon from './icons/ChevronDownIcon';
 import CheckCircleIcon from './icons/CheckCircleIcon';
 import XCircleIcon from './icons/XCircleIcon';
@@ -7,10 +7,14 @@ import PhoneIcon from './icons/PhoneIcon';
 import WhatsAppIcon from './icons/WhatsAppIcon';
 
 const serviceOptions = [
-    'Cybersecurity Solutions',
     'Managed IT Services',
+    'Cloud Services',
+    'Cybersecurity Solutions',
     'Networking Solutions',
     'Software Development',
+    'UI/UX Design',
+    'AI & Machine Learning',
+    'Blockchain Solutions',
     'Digital Marketing',
     'Social Media Management',
     'Data Analysis & Insights',
@@ -32,6 +36,28 @@ const ContactForm: React.FC = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof typeof formData, string>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+
+  useEffect(() => {
+    const checkHash = () => {
+        const hash = window.location.hash;
+        if (hash.includes('?service=')) {
+            const serviceParam = hash.split('?service=')[1];
+            if (serviceParam) {
+                const decodedService = decodeURIComponent(serviceParam.replace(/\+/g, ' '));
+                if (serviceOptions.includes(decodedService)) {
+                    setFormData(prev => ({ ...prev, service: decodedService }));
+                }
+            }
+        }
+    };
+
+    checkHash(); // Check on initial mount
+    window.addEventListener('hashchange', checkHash, false);
+
+    return () => {
+        window.removeEventListener('hashchange', checkHash, false);
+    };
+  }, []); // Empty dependency array ensures this effect runs only once to set up the listener
 
   const validateField = (name: keyof typeof formData, value: any) => {
     let error = '';

@@ -35,6 +35,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   const [results, setResults] = useState<SearchResults | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const inputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -44,18 +45,43 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-      setTimeout(() => inputRef.current?.focus(), 100);
-    } else {
-      // Reset state when closing
-      setQuery('');
-      setResults(null);
-      setExpandedCategories({});
-    }
+        const previouslyFocusedElement = document.activeElement as HTMLElement;
+        document.addEventListener('keydown', handleKeyDown);
+        setTimeout(() => inputRef.current?.focus(), 100);
 
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
+        const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements?.[0];
+        const lastElement = focusableElements?.[focusableElements.length - 1];
+
+        const trapFocus = (e: KeyboardEvent) => {
+            if (e.key === 'Tab') {
+                if (e.shiftKey) { // Shift+Tab
+                    if (document.activeElement === firstElement) {
+                        lastElement?.focus();
+                        e.preventDefault();
+                    }
+                } else { // Tab
+                    if (document.activeElement === lastElement) {
+                        firstElement?.focus();
+                        e.preventDefault();
+                    }
+                }
+            }
+        };
+        const currentModalRef = modalRef.current;
+        currentModalRef?.addEventListener('keydown', trapFocus);
+        
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+            currentModalRef?.removeEventListener('keydown', trapFocus);
+            previouslyFocusedElement?.focus();
+            setQuery('');
+            setResults(null);
+            setExpandedCategories({});
+        };
+    }
   }, [isOpen, onClose]);
   
   const handleSearch = (searchQuery: string) => {
@@ -128,6 +154,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div
+        ref={modalRef}
         className="relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-xl shadow-2xl animate-slide-down-fast flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
@@ -158,7 +185,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
           </form>
         </div>
         
-        <div className="overflow-y-auto max-h-[60vh] border-t border-slate-200 dark:border-slate-700">
+        <div className="overflow-y-auto max-h-[60vh] border-t border-slate-200 dark:border-slate-700" aria-live="polite">
           {query.trim() && results && (
             !hasResults ? (
                 <div className="p-10 text-center text-slate-500 dark:text-slate-400">

@@ -14,6 +14,7 @@ export interface Testimonial {
   name: string;
   company: string;
   avatarUrl: string;
+  relatedService: string;
 }
 
 export interface BlogPost {
@@ -26,6 +27,7 @@ export interface BlogPost {
     avatarUrl: string;
   };
   date: string;
+  tags?: string[];
 }
 
 export interface Project {
@@ -42,4 +44,14 @@ export interface JobOpening {
     type: 'Full-time' | 'Part-time' | 'Contract';
     description: string;
     department: 'Engineering' | 'Marketing' | 'Sales' | 'Support';
+}
+
+export interface Event {
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  link: string;
+  linkText: string;
 }

@@ -38,6 +38,8 @@ const Chatbot: React.FC = () => {
   const chatRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
+  const chatInputRef = useRef<HTMLInputElement>(null);
 
 
   useEffect(() => {
@@ -49,7 +51,7 @@ const Chatbot: React.FC = () => {
           config: {
             systemInstruction: `You are a helpful and friendly AI assistant for Ability IT, a technology services company.
             Your role is to answer user questions about the company's services, provide information, and guide them to the right sections of the website.
-            Keep your answers concise, professional, and helpful. You should be knowledgeable about cybersecurity, managed IT services, software development, digital marketing, data analysis, and other services offered by Ability IT.
+            Keep your answers concise, professional, and helpful. You should be knowledgeable about managed IT services, cybersecurity solutions, software development, digital marketing, data analysis, cloud services, UI/UX design, AI & Machine Learning, Blockchain solutions, and other services offered by Ability IT.
             If a user asks a question outside of your scope, politely state that you are an assistant for Ability IT and can only answer questions related to its business.
             IMPORTANT: Your response MUST strictly be in JSON format, adhering to this schema: {"response": string, "quickReplies": string[]}. The 'response' field should contain your conversational reply. The 'quickReplies' field should contain an array of 3-4 relevant, short (1-4 word) follow-up questions or topics a user might be interested in based on your response.`,
             responseMimeType: "application/json",
@@ -63,8 +65,8 @@ const Chatbot: React.FC = () => {
           },
           { 
             sender: 'bot', 
-            text: "I'm the Ability IT virtual assistant. I can answer questions about our services like Cybersecurity, Managed IT, and more. What can I help you find?",
-            quickReplies: ['What is managed IT?', 'Cybersecurity services', 'Custom software solutions'] 
+            text: "I'm the Ability IT virtual assistant. I can answer questions about our services like Managed IT, Custom Software, and more. What can I help you find?",
+            quickReplies: ['Cybersecurity', 'AI Solutions', 'UI/UX Design'] 
           }
         ]);
       } catch (error) {
@@ -76,6 +78,12 @@ const Chatbot: React.FC = () => {
     }
   }, [isOpen]);
   
+  useEffect(() => {
+    if (isOpen) {
+        setTimeout(() => chatInputRef.current?.focus(), 100);
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
@@ -123,6 +131,14 @@ const Chatbot: React.FC = () => {
     submitMessage(input);
   };
   
+  const handleToggle = () => {
+    const wasOpen = isOpen;
+    setIsOpen(!wasOpen);
+    if (wasOpen) {
+        toggleButtonRef.current?.focus();
+    }
+  };
+
   const lastMessage = messages[messages.length - 1];
   const showQuickReplies = lastMessage?.sender === 'bot' && lastMessage.quickReplies && lastMessage.quickReplies.length > 0 && !isLoading;
 
@@ -130,26 +146,31 @@ const Chatbot: React.FC = () => {
     <>
       <div className="fixed bottom-6 right-6 z-[999]">
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          ref={toggleButtonRef}
+          onClick={handleToggle}
           className="bg-indigo-600 text-white rounded-full p-4 shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           aria-label={isOpen ? 'Close chat' : 'Open chat'}
+          aria-expanded={isOpen}
+          aria-controls="chatbot-window"
         >
           {isOpen ? <XIcon /> : <ChatBubbleIcon />}
         </button>
       </div>
 
       <div
+        id="chatbot-window"
         className={`fixed bottom-24 right-6 z-[998] w-[calc(100vw-3rem)] max-w-sm h-[60vh] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col transition-all duration-300 ease-in-out ${
           isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
         }`}
         role="dialog"
         aria-hidden={!isOpen}
+        aria-labelledby="chatbot-title"
       >
         <header className="flex-shrink-0 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-t-2xl border-b border-slate-200 dark:border-slate-700">
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white text-center">Ability IT AI Assistant</h3>
+          <h3 id="chatbot-title" className="text-lg font-bold text-slate-800 dark:text-white text-center">Ability IT AI Assistant</h3>
         </header>
 
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4" aria-live="polite">
           <div className="space-y-4">
             {messages.map((msg, index) => (
               <div key={index} className={`flex items-start gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -198,6 +219,7 @@ const Chatbot: React.FC = () => {
         <div className="flex-shrink-0 border-t border-slate-200 dark:border-slate-700 p-2">
           <form onSubmit={handleFormSubmit} className="flex items-center gap-2">
             <input
+              ref={chatInputRef}
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}

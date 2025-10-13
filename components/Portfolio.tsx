@@ -8,35 +8,60 @@ const projectsData: Project[] = [
     title: 'Enterprise CRM Platform',
     client: 'Innovate Corp',
     description: 'Developed a custom CRM platform to streamline sales and customer support processes, resulting in a 30% increase in team efficiency. The platform features advanced contact management, sales pipeline tracking, automated reporting, and seamless integration with third-party APIs for enhanced functionality. Our focus was on creating an intuitive UI to ensure rapid user adoption.',
-    imageUrl: 'https://picsum.photos/500/300?random=10',
+    imageUrl: 'https://picsum.photos/seed/project10',
     tags: ['React', 'Node.js', 'Salesforce Integration'],
   },
   {
     title: 'E-commerce Website Redesign',
     client: 'Fashion Hub',
     description: 'A complete redesign of their online store with a focus on mobile-first user experience, which boosted conversion rates by 25%. We implemented a headless architecture using Shopify as the backend, providing greater flexibility and performance. The new design includes features like a visual search, personalized recommendations, and a streamlined one-page checkout process.',
-    imageUrl: 'https://picsum.photos/500/300?random=11',
+    imageUrl: 'https://picsum.photos/seed/project11',
     tags: ['Shopify', 'UI/UX', 'Performance Optimization'],
   },
+   {
+    title: 'Threat Intelligence Platform',
+    client: 'SecureNet',
+    description: 'Implemented an advanced threat intelligence platform that aggregates data from multiple sources to provide real-time alerts on potential security breaches. This led to a 60% faster incident response time for their security team.',
+    imageUrl: 'https://picsum.photos/seed/project12',
+    tags: ['Cybersecurity', 'Big Data', 'SIEM'],
+  },
   {
-    title: 'Cybersecurity Audit & Upgrade',
-    client: 'SecureBank',
-    description: 'Conducted a thorough security audit and implemented a multi-layered defense system to protect sensitive financial data against modern threats. This included penetration testing, network infrastructure hardening, implementing an advanced intrusion detection system, and providing comprehensive security awareness training for all employees to mitigate social engineering risks.',
-    imageUrl: 'https://picsum.photos/500/300?random=12',
-    tags: ['Cybersecurity', 'Compliance', 'Penetration Testing'],
+    title: 'Cloud Migration for SaaS Platform',
+    client: 'ScaleUp Solutions',
+    description: 'Migrated a monolithic SaaS application to a scalable, microservices-based architecture on AWS. The project involved containerization with Docker and orchestration with Kubernetes, resulting in a 50% reduction in infrastructure costs and improved deployment times.',
+    imageUrl: 'https://picsum.photos/seed/project14',
+    tags: ['Cloud', 'AWS', 'Kubernetes', 'DevOps'],
+  },
+  {
+    title: 'Mobile Banking App UI/UX',
+    client: 'Fintech Innovations',
+    description: 'Designed a user-centric mobile banking application from the ground up, focusing on intuitive navigation and a seamless user experience. Conducted extensive user research to inform the design, resulting in a 40% increase in user engagement.',
+    imageUrl: 'https://picsum.photos/seed/project15',
+    tags: ['UI/UX', 'Figma', 'Mobile Design'],
+  },
+  {
+    title: 'AI-Powered Recommendation Engine',
+    client: 'StreamNow',
+    description: 'Developed a machine learning model to provide personalized content recommendations for a streaming platform. The new engine increased user watch time by an average of 15% and improved user retention.',
+    imageUrl: 'https://picsum.photos/seed/project16',
+    tags: ['AI/ML', 'Python', 'Big Data'],
   },
    {
     title: 'Data Analytics Dashboard',
     client: 'HealthData Inc.',
     description: 'Built a real-time data analytics dashboard to visualize patient data, enabling healthcare providers to make faster, more informed decisions. The HIPAA-compliant dashboard integrates with various EMR systems, providing key metrics on patient outcomes, operational efficiency, and resource allocation, all presented through interactive charts and graphs.',
-    imageUrl: 'https://picsum.photos/500/300?random=13',
+    imageUrl: 'https://picsum.photos/seed/project13',
     tags: ['Tableau', 'Big Data', 'Healthcare IT'],
   },
 ];
 
-const filterTags = ['All', 'React', 'Node.js', 'Cybersecurity', 'UI/UX', 'Big Data', 'Healthcare IT', 'Compliance', 'Salesforce Integration'];
+const filterTags = ['All', 'React', 'Node.js', 'UI/UX', 'Cloud', 'Cybersecurity', 'AI/ML', 'DevOps', 'AWS', 'Big Data', 'Healthcare IT', 'SIEM', 'Salesforce Integration'];
 
-const Portfolio: React.FC = () => {
+interface PortfolioProps {
+  trackInterest: (interest: string) => void;
+}
+
+const Portfolio: React.FC<PortfolioProps> = ({ trackInterest }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTag, setActiveTag] = useState('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -55,6 +80,13 @@ const Portfolio: React.FC = () => {
     }
     return projectsData.filter(project => project.tags.includes(activeTag));
   }, [activeTag]);
+
+  const handleTagClick = (tag: string) => {
+    setActiveTag(tag);
+    if (tag !== 'All') {
+      trackInterest(tag);
+    }
+  };
 
   const handleProjectClick = (project: Project) => {
     setSelectedProject(project);
@@ -79,7 +111,8 @@ const Portfolio: React.FC = () => {
               {filterTags.map(tag => (
                   <button
                       key={tag}
-                      onClick={() => setActiveTag(tag)}
+                      onClick={() => handleTagClick(tag)}
+                      aria-pressed={activeTag === tag}
                       className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300 active:scale-95 ${
                           activeTag === tag
                           ? 'bg-indigo-600 text-white shadow-md'
@@ -102,7 +135,15 @@ const Portfolio: React.FC = () => {
                     aria-label={`View details for ${project.title}`}
                   >
                     <div className="relative overflow-hidden h-60">
-                      <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <img 
+                        src={`${project.imageUrl}/500/300`} 
+                        srcSet={`${project.imageUrl}/500/300 500w, ${project.imageUrl}/1000/600 1000w`}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        loading="lazy"
+                        decoding="async"
+                        alt={project.title} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                      />
                       <div className="absolute inset-0 bg-black/20"></div>
                     </div>
                     <div className="p-6">

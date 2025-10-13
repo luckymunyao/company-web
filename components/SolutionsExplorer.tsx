@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import type { Service } from '../types';
 import { servicesData } from '../data/content';
 import CheckIcon from './icons/CheckIcon';
-import ExternalLinkIcon from './icons/ExternalLinkIcon';
 import ArrowRightIcon from './icons/ArrowRightIcon';
 
 const serviceCategories = [
@@ -13,7 +12,11 @@ const serviceCategories = [
     'Business Strategy'
 ];
 
-const SolutionsExplorer: React.FC = () => {
+interface SolutionsExplorerProps {
+  trackInterest: (interest: string) => void;
+}
+
+const SolutionsExplorer: React.FC<SolutionsExplorerProps> = ({ trackInterest }) => {
     const [activeCategory, setActiveCategory] = useState('All');
     const [selectedService, setSelectedService] = useState<Service>(servicesData[0]);
 
@@ -28,6 +31,30 @@ const SolutionsExplorer: React.FC = () => {
             setSelectedService(filteredServices[0] || servicesData[0]);
         }
     }, [filteredServices, selectedService.title]);
+
+  const handleServiceLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, serviceTitle: string) => {
+    e.preventDefault();
+
+    const contactFormElement = document.getElementById('contact');
+
+    // Programmatically scroll to the form with smooth behavior
+    if (contactFormElement) {
+      contactFormElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    // Update URL hash and manually trigger event for ContactForm to pick up the change.
+    // This ensures the form is pre-filled without a harsh page jump.
+    history.replaceState(null, '', `#contact?service=${encodeURIComponent(serviceTitle)}`);
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  };
+
+  const handleSelectService = (service: Service) => {
+    setSelectedService(service);
+    trackInterest(service.category);
+  }
 
   return (
     <section id="solutions" className="py-20 bg-white dark:bg-slate-950">
@@ -45,6 +72,7 @@ const SolutionsExplorer: React.FC = () => {
                     <button
                         key={category}
                         onClick={() => setActiveCategory(category)}
+                        aria-pressed={activeCategory === category}
                         className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300 flex-shrink-0 active:scale-95 ${
                             activeCategory === category 
                             ? 'bg-indigo-600 text-white shadow-md' 
@@ -63,7 +91,8 @@ const SolutionsExplorer: React.FC = () => {
                     {filteredServices.map(service => (
                         <button
                             key={service.title}
-                            onClick={() => setSelectedService(service)}
+                            onClick={() => handleSelectService(service)}
+                            aria-pressed={selectedService.title === service.title}
                             className={`w-full text-left p-3 rounded-lg transition-all duration-300 text-md font-medium flex items-center gap-3 active:scale-95 ${
                                 selectedService.title === service.title
                                 ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 shadow-sm'
@@ -76,7 +105,7 @@ const SolutionsExplorer: React.FC = () => {
                     ))}
                 </div>
             </div>
-            <div className="md:col-span-8 lg:col-span-9">
+            <div className="md:col-span-8 lg:col-span-9" aria-live="polite">
                 <div key={selectedService.title} className="bg-slate-50 dark:bg-slate-800/50 p-8 rounded-xl shadow-inner animate-fade-in">
                     <div className="flex items-center gap-4 mb-4">
                          <div className="bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 rounded-full p-3">
@@ -92,12 +121,11 @@ const SolutionsExplorer: React.FC = () => {
                             <ul className="space-y-1">
                                 {selectedService.keyBenefits.map(benefit => (
                                      <li key={benefit} className="group">
-                                        <a href="#" title={`Learn more about ${benefit}`} className="flex items-start p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors duration-200">
+                                        <a href={`#contact?service=${encodeURIComponent(selectedService.title)}`} onClick={(e) => handleServiceLinkClick(e, selectedService.title)} title={`Inquire about ${benefit}`} className="flex items-start p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors duration-200">
                                             <span className="text-green-500 mt-1 mr-2 flex-shrink-0"><CheckIcon /></span>
                                             <span className="flex-grow text-slate-600 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
                                                 {benefit}
                                             </span>
-                                            <span className="ml-2 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200"><ExternalLinkIcon /></span>
                                         </a>
                                     </li>
                                 ))}
@@ -108,12 +136,11 @@ const SolutionsExplorer: React.FC = () => {
                             <ul className="space-y-1">
                                 {selectedService.includes.map(item => (
                                      <li key={item} className="group">
-                                        <a href="#" title={`Learn more about ${item}`} className="flex items-start p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors duration-200">
+                                        <a href={`#contact?service=${encodeURIComponent(selectedService.title)}`} onClick={(e) => handleServiceLinkClick(e, selectedService.title)} title={`Inquire about ${item}`} className="flex items-start p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors duration-200">
                                             <span className="text-indigo-500 mt-1 mr-2 flex-shrink-0"><CheckIcon /></span>
                                             <span className="flex-grow text-slate-600 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
                                                 {item}
                                             </span>
-                                             <span className="ml-2 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200"><ExternalLinkIcon /></span>
                                         </a>
                                     </li>
 
@@ -122,7 +149,7 @@ const SolutionsExplorer: React.FC = () => {
                         </div>
                     </div>
                     
-                    <a href="#contact" className="group inline-flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md active:scale-95 transform hover:scale-105">
+                    <a href={`#contact?service=${encodeURIComponent(selectedService.title)}`} onClick={(e) => handleServiceLinkClick(e, selectedService.title)} className="group inline-flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md active:scale-95 transform hover:scale-105">
                         <span>Get a Quote for this Service</span>
                         <span className="transition-transform duration-300 group-hover:translate-x-1">
                             <ArrowRightIcon />

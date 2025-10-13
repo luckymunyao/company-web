@@ -3,6 +3,7 @@ import type { Testimonial } from '../types';
 import QuoteIcon from './icons/QuoteIcon';
 import ChevronLeftIcon from './icons/ChevronLeftIcon';
 import ChevronRightIcon from './icons/ChevronRightIcon';
+import ArrowRightIcon from './icons/ArrowRightIcon';
 import TestimonialSkeleton from './TestimonialSkeleton';
 
 const testimonialsData: Testimonial[] = [
@@ -11,19 +12,64 @@ const testimonialsData: Testimonial[] = [
     name: 'Sarah Johnson',
     company: 'CEO of TechCorp',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704a',
+    relatedService: 'Cybersecurity Solutions',
   },
   {
     quote: "The managed IT services from Ability IT are exceptional. Their team is responsive, knowledgeable, and has significantly improved our system uptime. Highly recommended!",
     name: 'Michael Chen',
     company: 'Operations Director, Growth Solutions',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704b',
+    relatedService: 'Managed IT Services',
   },
   {
     quote: "Working with Ability IT on our digital marketing strategy has yielded incredible results. Their data-driven insights led to a 150% increase in our online leads within just three months.",
     name: 'Jessica Rodriguez',
     company: 'Marketing Manager, MarketPro',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704c',
+    relatedService: 'Digital Marketing',
   },
+  {
+    quote: "The UI/UX design for our new mobile app is fantastic. Ability IT captured our vision perfectly and created an intuitive experience that our users love.",
+    name: 'Emily White',
+    company: 'Product Manager, ConnectApp',
+    avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704d',
+    relatedService: 'UI/UX Design',
+  },
+  {
+    quote: "Migrating our entire infrastructure to the cloud was a massive undertaking, but Ability IT made it seamless. Their expertise and meticulous planning resulted in zero downtime.",
+    name: 'David Garcia',
+    company: 'CTO, Cloud Nine Inc.',
+    avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704e',
+    relatedService: 'Cloud Services',
+  },
+  {
+    quote: "Their AI and Machine Learning team developed a recommendation engine that increased our user engagement by 40%. Truly cutting-edge work!",
+    name: 'Olivia Martinez',
+    company: 'Head of Data Science, Streamly',
+    avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704f',
+    relatedService: 'AI & Machine Learning',
+  },
+  {
+    quote: "Ability IT developed a custom 3D rendering pipeline for our animation studio. The performance is incredible, and it has cut our production times by nearly 40%. Their expertise in graphics and software is unmatched.",
+    name: 'Leo Maxwell',
+    company: 'Creative Director, Pixel Perfect Studios',
+    avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704g',
+    relatedService: 'Software Development',
+  },
+  {
+    quote: "The data analytics dashboard built by Ability IT transformed our decision-making process. We can now visualize complex data in real-time, leading to a 20% improvement in operational efficiency.",
+    name: 'Carlos Gomez',
+    company: 'COO, DataDriven Logistics',
+    avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704h',
+    relatedService: 'Data Analysis & Insights',
+  },
+  {
+    quote: "Ability IT was instrumental in developing our decentralized finance platform. Their expertise in blockchain and smart contracts was top-notch, delivering a secure and transparent solution that our users trust.",
+    name: 'Kenji Tanaka',
+    company: 'Founder, DeFi Ledger',
+    avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704i',
+    relatedService: 'Blockchain Solutions',
+  }
 ];
 
 const Testimonials: React.FC = () => {
@@ -94,6 +140,22 @@ const Testimonials: React.FC = () => {
     timeoutRef.current = setTimeout(nextSlide, 5000);
   };
 
+  const handleLearnMoreClick = (e: React.MouseEvent<HTMLAnchorElement>, serviceTitle: string) => {
+    e.preventDefault();
+
+    const contactFormElement = document.getElementById('contact');
+
+    if (contactFormElement) {
+      contactFormElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    
+    history.replaceState(null, '', `#contact?service=${encodeURIComponent(serviceTitle)}`);
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+  };
+
   return (
     <section id="testimonials" className="py-20 bg-white dark:bg-slate-950">
       <div className="container mx-auto px-6">
@@ -110,25 +172,53 @@ const Testimonials: React.FC = () => {
             className="max-w-3xl mx-auto relative group"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            aria-roledescription="carousel"
+            aria-label="Client testimonials"
           >
-            <div className="overflow-hidden relative h-[380px] sm:h-[320px]">
+            <div className="overflow-hidden relative h-[420px] sm:h-[340px]">
               <div
                 className="flex transition-transform ease-in-out duration-500"
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+                aria-live="polite"
               >
                 {testimonialsData.map((testimonial, index) => (
-                  <div key={index} className="w-full flex-shrink-0 p-4">
+                  <div 
+                    key={index} 
+                    className="w-full flex-shrink-0 p-4"
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label={`${index + 1} of ${testimonialsData.length}`}
+                  >
                     <div className="bg-slate-50 dark:bg-slate-800 p-8 rounded-xl shadow-lg flex flex-col h-full justify-between">
                       <div className="mb-6">
                         <QuoteIcon />
                         <p className="text-slate-600 dark:text-slate-400 italic mt-4">"{testimonial.quote}"</p>
                       </div>
-                      <div className="flex items-center">
-                        <img src={testimonial.avatarUrl} alt={testimonial.name} className="w-14 h-14 rounded-full mr-4 border-2 border-indigo-200 dark:border-indigo-800" />
-                        <div>
-                          <p className="font-bold text-slate-800 dark:text-slate-200">{testimonial.name}</p>
-                          <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">{testimonial.company}</p>
+                      <div className="flex items-end justify-between">
+                        <div className="flex items-center">
+                          <img 
+                            src={testimonial.avatarUrl} 
+                            alt={testimonial.name} 
+                            loading="lazy"
+                            decoding="async"
+                            className="w-14 h-14 rounded-full mr-4 border-2 border-indigo-200 dark:border-indigo-800" 
+                          />
+                          <div>
+                            <p className="font-bold text-slate-800 dark:text-slate-200">{testimonial.name}</p>
+                            <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">{testimonial.company}</p>
+                          </div>
                         </div>
+                        <a 
+                            href="#contact" 
+                            onClick={(e) => handleLearnMoreClick(e, testimonial.relatedService)}
+                            className="group inline-flex items-center flex-shrink-0 gap-2 text-sm font-semibold text-slate-600 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-all duration-300"
+                            title={`Inquire about ${testimonial.relatedService}`}
+                        >
+                            <span>Learn More</span>
+                            <span className="transition-transform duration-300 group-hover:translate-x-1">
+                                <ArrowRightIcon />
+                            </span>
+                        </a>
                       </div>
                     </div>
                   </div>

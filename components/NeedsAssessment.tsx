@@ -77,7 +77,7 @@ const NeedsAssessment: React.FC = () => {
       case 'quiz':
         const question = quizQuestions[currentQuestionIndex];
         return (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in" aria-live="polite">
             <p className="text-center text-sm font-semibold text-indigo-600 dark:text-indigo-400 mb-2">Question {currentQuestionIndex + 1} of {quizQuestions.length}</p>
             <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white text-center mb-8">{question.question}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -96,7 +96,7 @@ const NeedsAssessment: React.FC = () => {
 
       case 'results':
         return (
-          <div className="text-center animate-fade-in">
+          <div className="text-center animate-fade-in" aria-live="polite">
             <div className="flex justify-center items-center gap-2 mb-4">
                 <SparklesIcon />
                 <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Thank You For Your Answers!</h3>

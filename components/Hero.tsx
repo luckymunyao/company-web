@@ -1,8 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  personalizedContent?: {
+    headline: string;
+    subheadline: string;
+  };
+}
+
+const defaultContent = {
+  headline: 'Engineering the Future of Technology',
+  subheadline: 'We build intelligent, scalable, and secure solutions that power the next generation of business. Discover our AI-driven approach to digital innovation.'
+};
+
+const Hero: React.FC<HeroProps> = ({ personalizedContent }) => {
   const [isVisible, setIsVisible] = useState(false);
   const heroContentRef = useRef<HTMLDivElement | null>(null);
+
+  const content = personalizedContent && personalizedContent.headline ? personalizedContent : defaultContent;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -49,24 +63,23 @@ const Hero: React.FC = () => {
       {/* Content */}
       <div ref={heroContentRef} className="relative z-20 container mx-auto px-6 text-center">
         <h1 className={`text-4xl md:text-6xl font-extrabold leading-tight mb-4 transition-all duration-700 ease-out [text-shadow:0_2px_4px_rgba(0,0,0,0.5)] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
-          Your Partner in Digital Transformation
+          {content.headline}
         </h1>
         <p className={`text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-8 transition-all duration-700 ease-out delay-200 [text-shadow:0_1px_4px_rgba(0,0,0,0.5)] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
-          Your strategic partner for integrated solutions in IT, cybersecurity, custom software development, social media, and data analytics.
+          {content.subheadline}
         </p>
         <div className={`flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 transition-all duration-700 ease-out delay-400 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
             <a 
-              href="#contact" 
-              className="inline-block text-2xl font-bold text-white bg-indigo-600 rounded-full py-10 px-20 transition-all duration-300 ease-in-out shadow-lg shadow-indigo-900/40 hover:shadow-2xl hover:shadow-indigo-500/50 transform hover:-translate-y-1 hover:scale-105 w-full sm:w-auto [text-shadow:0_1px_2px_rgba(0,0,0,0.2)]"
+              href="#consultation" 
+              className="inline-block text-xl font-bold text-white bg-indigo-600 rounded-lg py-4 px-10 transition-all duration-300 ease-in-out shadow-lg shadow-indigo-900/40 hover:shadow-2xl hover:shadow-indigo-500/50 transform hover:-translate-y-1 hover:scale-105 w-full sm:w-auto [text-shadow:0_1px_2px_rgba(0,0,0,0.2)]"
             >
-                Get a Quote
+                Book a Consultation
             </a>
-            {/* FIX: The file was truncated here, leaving an incomplete `<a>` tag and no component export. Completed the tag and added the export. */}
             <a 
               href="#solutions" 
-              className="inline-block text-2xl font-bold text-white bg-black/20 backdrop-blur-md border-2 border-white/30 rounded-full py-10 px-20 transition-all duration-300 ease-in-out shadow-lg shadow-black/40 hover:shadow-xl hover:bg-black/40 hover:border-white/60 transform hover:-translate-y-1 hover:scale-105 w-full sm:w-auto [text-shadow:0_1px_2px_rgba(0,0,0,0.2)]"
+              className="inline-block text-xl font-bold text-white bg-black/20 backdrop-blur-md border-2 border-white/30 rounded-lg py-4 px-10 transition-all duration-300 ease-in-out shadow-lg shadow-black/40 hover:shadow-xl hover:bg-black/40 hover:border-white/60 transform hover:-translate-y-1 hover:scale-105 w-full sm:w-auto [text-shadow:0_1px_2px_rgba(0,0,0,0.2)]"
             >
-                Our Solutions
+                Explore Solutions
             </a>
         </div>
       </div>
