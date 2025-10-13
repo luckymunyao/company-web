@@ -23,6 +23,29 @@ const Booking: React.FC = () => {
     const [errors, setErrors] = useState<Partial<Record<keyof typeof bookingDetails, string>>>({});
     const [formError, setFormError] = useState(''); // New state for step errors
 
+    useEffect(() => {
+        const checkHash = () => {
+            const hash = window.location.hash;
+            if (hash.includes('?service=')) {
+                const serviceParam = hash.split('?service=')[1];
+                if (serviceParam) {
+                    const decodedService = decodeURIComponent(serviceParam.replace(/\+/g, ' '));
+                    const serviceExists = servicesData.some(s => s.title === decodedService);
+                    if (serviceExists) {
+                        setBookingDetails(prev => ({ ...prev, service: decodedService }));
+                    }
+                }
+            }
+        };
+
+        checkHash();
+        window.addEventListener('hashchange', checkHash, false);
+
+        return () => {
+            window.removeEventListener('hashchange', checkHash, false);
+        };
+    }, []);
+
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 

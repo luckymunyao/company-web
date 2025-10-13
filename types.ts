@@ -7,6 +7,7 @@ export interface Service {
   category: string;
   keyBenefits: string[];
   includes: string[];
+  relatedPostSlug?: string;
 }
 
 export interface Testimonial {
@@ -20,14 +21,17 @@ export interface Testimonial {
 export interface BlogPost {
   category: string;
   title: string;
+  slug: string;
   excerpt: string;
   imageUrl: string;
   author: {
-    name: string;
+    name:string;
     avatarUrl: string;
   };
   date: string;
+  content: string;
   tags?: string[];
+  relatedService?: string;
 }
 
 export interface Project {

@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { servicesData } from '../data/content';
+import type { Service } from '../types';
 
 // Define a map from specific tags/titles to broader interest categories.
 const interestMap: { [key: string]: string } = {
@@ -66,20 +68,39 @@ const personalizedContent = {
 
 export const usePersonalization = () => {
     const [heroContent, setHeroContent] = useState<{ headline: string; subheadline: string; }>({ headline: '', subheadline: '' });
+    const [recommendedServices, setRecommendedServices] = useState<Service[]>([]);
 
     useEffect(() => {
-        // Read profile on initial load
         try {
-            const profile = JSON.parse(localStorage.getItem('userInterestProfile') || '{}');
-            // Find the interest with the highest score
-            const topInterest = Object.keys(profile).reduce((a, b) => profile[a] > profile[b] ? a : b, '');
+            const profile: { [key: string]: number } = JSON.parse(localStorage.getItem('userInterestProfile') || '{}');
+            const sortedInterests = Object.keys(profile).sort((a, b) => profile[b] - profile[a]);
+            const topInterest = sortedInterests[0];
 
             if (topInterest && personalizedContent[topInterest as keyof typeof personalizedContent]) {
                 setHeroContent(personalizedContent[topInterest as keyof typeof personalizedContent]);
             }
+
+            if (sortedInterests.length > 0) {
+                let finalRecommendations: Service[] = [];
+                // Add services from top interest categories
+                for (const interest of sortedInterests) {
+                    const servicesForInterest = servicesData.filter(service => service.category === interest);
+                    finalRecommendations.push(...servicesForInterest);
+                }
+                
+                // Remove duplicates and take the first 3
+                const uniqueRecommendations = Array.from(new Set(finalRecommendations.map(s => s.title)))
+                  .map(title => finalRecommendations.find(s => s.title === title) as Service);
+
+                setRecommendedServices(uniqueRecommendations.slice(0, 3));
+            } else {
+                // Default recommendations for new users
+                setRecommendedServices(servicesData.filter(s => ['Cybersecurity Solutions', 'Software Development', 'Data Analysis & Insights'].includes(s.title)));
+            }
         } catch (error) {
             console.error("Failed to parse user interest profile:", error);
             localStorage.removeItem('userInterestProfile');
+            setRecommendedServices(servicesData.filter(s => ['Cybersecurity Solutions', 'Software Development', 'Data Analysis & Insights'].includes(s.title)));
         }
     }, []);
 
@@ -98,5 +119,5 @@ export const usePersonalization = () => {
         }
     }, []);
 
-    return { heroContent, trackInterest };
+    return { heroContent, trackInterest, recommendedServices };
 };

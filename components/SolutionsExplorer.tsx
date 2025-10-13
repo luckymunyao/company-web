@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import type { Service } from '../types';
 import { servicesData } from '../data/content';
 import CheckIcon from './icons/CheckIcon';
 import ArrowRightIcon from './icons/ArrowRightIcon';
+import ChevronDownIcon from './icons/ChevronDownIcon';
 
 const serviceCategories = [
     'All', 
@@ -19,18 +21,46 @@ interface SolutionsExplorerProps {
 const SolutionsExplorer: React.FC<SolutionsExplorerProps> = ({ trackInterest }) => {
     const [activeCategory, setActiveCategory] = useState('All');
     const [selectedService, setSelectedService] = useState<Service>(servicesData[0]);
+    const [sortBy, setSortBy] = useState('default'); // 'default', 'alphabetical', 'popularity'
 
-    const filteredServices = useMemo(() => {
-        if (activeCategory === 'All') return servicesData;
-        return servicesData.filter(service => service.category === activeCategory);
-    }, [activeCategory]);
+    const displayedServices = useMemo(() => {
+        // 1. Filter by category
+        let services = activeCategory === 'All' 
+            ? [...servicesData] // Create a mutable copy
+            : servicesData.filter(service => service.category === activeCategory);
+        
+        // 2. Sort based on sortBy state
+        switch (sortBy) {
+            case 'alphabetical':
+                services.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'popularity':
+                try {
+                    const popularity = JSON.parse(localStorage.getItem('servicePopularity') || '{}');
+                    services.sort((a, b) => (popularity[b.title] || 0) - (popularity[a.title] || 0));
+                } catch (error) {
+                    console.error("Could not sort by popularity:", error);
+                }
+                break;
+            case 'default':
+            default:
+                // For default, we need to restore the original order if it's been sorted before.
+                // Re-filtering is the simplest way to ensure this.
+                 services = activeCategory === 'All' 
+                    ? [...servicesData]
+                    : servicesData.filter(service => service.category === activeCategory);
+                break;
+        }
+
+        return services;
+    }, [activeCategory, sortBy]);
     
     // Update selected service if it's not in the new filtered list
     React.useEffect(() => {
-        if (!filteredServices.find(s => s.title === selectedService.title)) {
-            setSelectedService(filteredServices[0] || servicesData[0]);
+        if (!displayedServices.find(s => s.title === selectedService.title)) {
+            setSelectedService(displayedServices[0] || servicesData[0]);
         }
-    }, [filteredServices, selectedService.title]);
+    }, [displayedServices, selectedService.title]);
 
   const handleServiceLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, serviceTitle: string) => {
     e.preventDefault();
@@ -54,6 +84,14 @@ const SolutionsExplorer: React.FC<SolutionsExplorerProps> = ({ trackInterest }) 
   const handleSelectService = (service: Service) => {
     setSelectedService(service);
     trackInterest(service.category);
+    // Track service popularity in localStorage
+    try {
+        const popularity = JSON.parse(localStorage.getItem('servicePopularity') || '{}');
+        popularity[service.title] = (popularity[service.title] || 0) + 1;
+        localStorage.setItem('servicePopularity', JSON.stringify(popularity));
+    } catch (error) {
+        console.error("Failed to track service popularity:", error);
+    }
   }
 
   return (
@@ -66,29 +104,47 @@ const SolutionsExplorer: React.FC<SolutionsExplorerProps> = ({ trackInterest }) 
           </p>
         </div>
         
-        <div className="relative mb-10">
-            <div className="flex space-x-2 overflow-x-auto pb-4 hide-scrollbar">
-                {serviceCategories.map(category => (
-                    <button
-                        key={category}
-                        onClick={() => setActiveCategory(category)}
-                        aria-pressed={activeCategory === category}
-                        className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300 flex-shrink-0 active:scale-95 ${
-                            activeCategory === category 
-                            ? 'bg-indigo-600 text-white shadow-md' 
-                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                        }`}
-                    >
-                        {category}
-                    </button>
-                ))}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-10">
+            <div className="relative w-full sm:w-auto overflow-hidden">
+                <div className="flex space-x-2 overflow-x-auto pb-2 hide-scrollbar">
+                    {serviceCategories.map(category => (
+                        <button
+                            key={category}
+                            onClick={() => setActiveCategory(category)}
+                            aria-pressed={activeCategory === category}
+                            className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300 flex-shrink-0 active:scale-95 ${
+                                activeCategory === category 
+                                ? 'bg-indigo-600 text-white shadow-md' 
+                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+                            }`}
+                        >
+                            {category}
+                        </button>
+                    ))}
+                </div>
+            </div>
+            <div className="relative flex-shrink-0 w-full sm:w-auto">
+                <label htmlFor="sort-services" className="sr-only">Sort Services</label>
+                <select
+                    id="sort-services"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full sm:w-auto appearance-none pr-10 pl-4 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-sm font-semibold focus:ring-indigo-500 focus:border-indigo-500 transition"
+                >
+                    <option value="default">Sort by: Default</option>
+                    <option value="alphabetical">Sort by: Alphabetical</option>
+                    <option value="popularity">Sort by: Popularity</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-700 dark:text-slate-300">
+                    <ChevronDownIcon />
+                </div>
             </div>
         </div>
 
         <div className="md:grid md:grid-cols-12 md:gap-12 min-h-[500px]">
             <div className="md:col-span-4 lg:col-span-3 mb-8 md:mb-0">
                 <div className="space-y-2">
-                    {filteredServices.map(service => (
+                    {displayedServices.map(service => (
                         <button
                             key={service.title}
                             onClick={() => handleSelectService(service)}
@@ -149,12 +205,25 @@ const SolutionsExplorer: React.FC<SolutionsExplorerProps> = ({ trackInterest }) 
                         </div>
                     </div>
                     
-                    <a href={`#contact?service=${encodeURIComponent(selectedService.title)}`} onClick={(e) => handleServiceLinkClick(e, selectedService.title)} className="group inline-flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md active:scale-95 transform hover:scale-105">
-                        <span>Get a Quote for this Service</span>
-                        <span className="transition-transform duration-300 group-hover:translate-x-1">
-                            <ArrowRightIcon />
-                        </span>
-                    </a>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <a href={`#contact?service=${encodeURIComponent(selectedService.title)}`} onClick={(e) => handleServiceLinkClick(e, selectedService.title)} className="group inline-flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md active:scale-95 transform hover:scale-105">
+                            <span>Get a Quote for this Service</span>
+                            <span className="transition-transform duration-300 group-hover:translate-x-1">
+                                <ArrowRightIcon />
+                            </span>
+                        </a>
+                         {selectedService.relatedPostSlug && (
+                            <Link 
+                                to={`/blog/${selectedService.relatedPostSlug}`}
+                                className="group inline-flex items-center gap-2 font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                            >
+                                <span>Read Related Article</span>
+                                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                                    <ArrowRightIcon />
+                                </span>
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

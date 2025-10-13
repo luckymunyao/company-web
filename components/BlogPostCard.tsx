@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import type { BlogPost } from '../types';
 
 interface BlogPostCardProps {
@@ -7,7 +8,7 @@ interface BlogPostCardProps {
 
 const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
   return (
-    <a href="#" className="group block bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-in-out overflow-hidden">
+    <Link to={`/blog/${post.slug}`} className="group block bg-white dark:bg-slate-800 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-in-out overflow-hidden">
       <div className="relative">
         <img 
           src={`${post.imageUrl}/400/250`} 
@@ -31,7 +32,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 };
 

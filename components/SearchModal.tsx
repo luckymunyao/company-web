@@ -114,7 +114,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
       .map(post => ({
         title: post.title,
         snippet: post.excerpt,
-        href: '#blog'
+        href: `#/blog/${post.slug}`
       }));
 
     const faqResults = faqData
