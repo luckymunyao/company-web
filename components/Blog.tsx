@@ -27,12 +27,13 @@ const Blog: React.FC = () => {
 
     if (searchQuery.trim() !== '') {
       const lowercasedQuery = searchQuery.toLowerCase();
-      posts = posts.filter(post =>
-        post.title.toLowerCase().includes(lowercasedQuery) ||
-        post.excerpt.toLowerCase().includes(lowercasedQuery) ||
-        post.author.name.toLowerCase().includes(lowercasedQuery) ||
-        (post.tags && post.tags.some(tag => tag.toLowerCase().includes(lowercasedQuery)))
-      );
+      posts = posts.filter(post => {
+        const titleMatch = post.title.toLowerCase().includes(lowercasedQuery);
+        const excerptMatch = post.excerpt.toLowerCase().includes(lowercasedQuery);
+        const authorMatch = post.author.name.toLowerCase().includes(lowercasedQuery);
+        const tagsMatch = post.tags && post.tags.some(tag => tag.toLowerCase().includes(lowercasedQuery));
+        return titleMatch || excerptMatch || authorMatch || tagsMatch;
+      });
     }
 
     return posts;
