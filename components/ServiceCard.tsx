@@ -46,7 +46,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => {
       }`}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
-      <div className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full p-4 mb-6 transition-colors duration-300 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800/50">
+      <div className="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full p-4 mb-6 transition-all duration-300 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900 group-hover:scale-110">
         {service.icon}
       </div>
       <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 transition-colors duration-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{service.title}</h3>

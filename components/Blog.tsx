@@ -1,13 +1,22 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { blogPostsData } from '../data/content';
 import BlogPostCard from './BlogPostCard';
+import BlogPostCardSkeleton from './BlogPostCardSkeleton';
 import SearchIcon from './icons/SearchIcon';
 
 const categories = ['All Categories', ...Array.from(new Set(blogPostsData.map(post => post.category)))];
 
 const Blog: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredPosts = useMemo(() => {
     let posts = blogPostsData;
@@ -21,6 +30,7 @@ const Blog: React.FC = () => {
       posts = posts.filter(post =>
         post.title.toLowerCase().includes(lowercasedQuery) ||
         post.excerpt.toLowerCase().includes(lowercasedQuery) ||
+        post.author.name.toLowerCase().includes(lowercasedQuery) ||
         (post.tags && post.tags.some(tag => tag.toLowerCase().includes(lowercasedQuery)))
       );
     }
@@ -45,7 +55,7 @@ const Blog: React.FC = () => {
             </div>
             <input
               type="search"
-              placeholder="Search articles by keyword or tag..."
+              placeholder="Search by keyword, author, or tag..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-3 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 focus:ring-indigo-500 focus:border-indigo-500 transition"
@@ -70,10 +80,14 @@ const Blog: React.FC = () => {
         </div>
 
         <div aria-live="polite">
-          {filteredPosts.length > 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 3 }).map((_, index) => <BlogPostCardSkeleton key={index} />)}
+            </div>
+          ) : filteredPosts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredPosts.map((post, index) => (
-                <BlogPostCard key={index} post={post} />
+                <BlogPostCard key={index} post={post} searchQuery={searchQuery} />
               ))}
             </div>
           ) : (

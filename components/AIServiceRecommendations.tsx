@@ -18,7 +18,7 @@ const AIServiceRecommendations: React.FC<AIServiceRecommendationsProps> = ({ rec
     if (contactFormElement) {
       contactFormElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    history.replaceState(null, '', `#contact?service=${encodeURIComponent(serviceTitle)}`);
+    window.history.replaceState(null, '', `#contact?service=${encodeURIComponent(serviceTitle)}`);
     window.dispatchEvent(new HashChangeEvent('hashchange'));
   };
 

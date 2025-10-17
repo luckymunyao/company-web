@@ -5,6 +5,8 @@ import XCircleIcon from './icons/XCircleIcon';
 import UploadIcon from './icons/UploadIcon';
 import PhoneIcon from './icons/PhoneIcon';
 import WhatsAppIcon from './icons/WhatsAppIcon';
+import EnvelopeIcon from './icons/EnvelopeIcon';
+import SpinnerIcon from './icons/SpinnerIcon';
 
 const serviceOptions = [
     'Managed IT Services',
@@ -25,7 +27,11 @@ const serviceOptions = [
     'Other',
 ];
 
-const ContactForm: React.FC = () => {
+interface ContactFormProps {
+  onOpenCallbackModal: () => void;
+}
+
+const ContactForm: React.FC<ContactFormProps> = ({ onOpenCallbackModal }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -34,7 +40,9 @@ const ContactForm: React.FC = () => {
     attachment: null as File | null,
   });
   const [errors, setErrors] = useState<Partial<Record<keyof typeof formData, string>>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   useEffect(() => {
@@ -142,8 +150,9 @@ const ContactForm: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitError('');
     
     const nameIsValid = validateField('name', formData.name);
     const emailIsValid = validateField('email', formData.email);
@@ -151,13 +160,31 @@ const ContactForm: React.FC = () => {
     const attachmentIsValid = validateField('attachment', formData.attachment);
 
     if (nameIsValid && emailIsValid && messageIsValid && attachmentIsValid) {
-      const submissionData = {
-          ...formData,
-          attachment: formData.attachment ? formData.attachment.name : 'No file attached',
-      };
-      console.log('Form submitted:', submissionData);
-      setSubmitted(true);
-      // Here you would typically send the data to a server
+      setIsSubmitting(true);
+      try {
+        // Simulate an API call to a backend server
+        await new Promise((resolve, reject) => {
+            setTimeout(() => {
+                // To test the error state, use an email like "error@example.com"
+                if (formData.email.includes('error@')) {
+                    reject(new Error('This email address has been blocked.'));
+                } else {
+                    const submissionData = {
+                      ...formData,
+                      attachment: formData.attachment ? formData.attachment.name : 'No file attached',
+                    };
+                    console.log('Simulating sending data to backend:', submissionData);
+                    resolve('Success');
+                }
+            }, 2000);
+        });
+        setSubmitted(true);
+      } catch (error) {
+          console.error('Submission failed:', error);
+          setSubmitError(error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.');
+      } finally {
+          setIsSubmitting(false);
+      }
     } else {
       console.log('Form submission failed due to validation errors.');
     }
@@ -183,15 +210,32 @@ const ContactForm: React.FC = () => {
             <p className="text-lg text-slate-600 dark:text-slate-400 mt-4">
               Have a question or a project in mind? We'd love to hear from you.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 text-slate-600 dark:text-slate-400">
-                <a href="tel:+254798996332" className="flex items-center gap-3 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300 text-lg">
+            <div className="mt-8 flex flex-col sm:flex-row flex-wrap justify-center items-center gap-x-8 gap-y-6 text-slate-600 dark:text-slate-400">
+                <button
+                  onClick={onOpenCallbackModal}
+                  className="flex items-center gap-3 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300 text-lg"
+                >
                     <PhoneIcon />
-                    <span className="font-semibold">+254 798 996332</span>
-                </a>
+                    <span className="font-semibold">Request a Callback</span>
+                </button>
                 <a href="https://wa.me/254798996332" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-green-500 dark:hover:text-green-400 transition-colors duration-300 text-lg">
                     <WhatsAppIcon />
                     <span className="font-semibold">Message on WhatsApp</span>
                 </a>
+                <div className="flex items-center gap-3 text-lg">
+                    <EnvelopeIcon />
+                    <div className="flex flex-col items-start font-semibold">
+                        <a href="mailto:luckymunyao@gmail.com" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300">
+                            luckymunyao@gmail.com
+                        </a>
+                        <a href="mailto:munyaolucky@gmail.com" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300">
+                            munyaolucky@gmail.com
+                        </a>
+                        <a href="mailto:munyaolucky14@gmail.com" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300">
+                            munyaolucky14@gmail.com
+                        </a>
+                    </div>
+                </div>
             </div>
           </div>
           <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 p-8 md:p-12 rounded-xl shadow-lg space-y-6" noValidate>
@@ -307,10 +351,17 @@ const ContactForm: React.FC = () => {
               </div>
             </div>
             <div>
-              <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Send Message
+              <button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 dark:disabled:bg-indigo-800 disabled:cursor-wait flex items-center justify-center"
+              >
+                {isSubmitting ? <SpinnerIcon /> : 'Send Message'}
               </button>
             </div>
+            {submitError && (
+              <p role="alert" className="text-sm text-red-500 text-center mt-2">{submitError}</p>
+            )}
           </form>
         </div>
       </div>

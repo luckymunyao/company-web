@@ -1,6 +1,7 @@
 import React from 'react';
 import PhoneIcon from './icons/PhoneIcon';
 import WhatsAppIcon from './icons/WhatsAppIcon';
+import EnvelopeIcon from './icons/EnvelopeIcon';
 
 const TwitterIcon = () => (
   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -27,14 +28,32 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-center md:text-left">
-            <p className="text-lg font-semibold text-white">Ability IT</p>
+            <p className="text-lg font-semibold text-white">AbilityTech</p>
             <p className="text-sm">&copy; {new Date().getFullYear()} All Rights Reserved.</p>
-            <div className="mt-4">
+            <div className="mt-4 space-y-2">
                 <a href="tel:+254798996332" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors text-sm">
                     <div className="h-4 w-4 flex items-center justify-center">
                         <PhoneIcon />
                     </div>
                     <span>+254 798 996332</span>
+                </a>
+                <a href="mailto:luckymunyao@gmail.com" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors text-sm">
+                    <div className="h-4 w-4 flex items-center justify-center">
+                        <EnvelopeIcon />
+                    </div>
+                    <span>luckymunyao@gmail.com</span>
+                </a>
+                 <a href="mailto:munyaolucky@gmail.com" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors text-sm">
+                    <div className="h-4 w-4 flex items-center justify-center">
+                        <EnvelopeIcon />
+                    </div>
+                    <span>munyaolucky@gmail.com</span>
+                </a>
+                 <a href="mailto:munyaolucky14@gmail.com" className="flex items-center justify-center md:justify-start gap-2 hover:text-white transition-colors text-sm">
+                    <div className="h-4 w-4 flex items-center justify-center">
+                        <EnvelopeIcon />
+                    </div>
+                    <span>munyaolucky14@gmail.com</span>
                 </a>
             </div>
           </div>
@@ -46,7 +65,6 @@ const Footer: React.FC = () => {
             <a href="#portfolio" className="hover:text-white transition-colors duration-300">Portfolio</a>
             <a href="#blog" className="hover:text-white transition-colors duration-300">Blog</a>
             <a href="#faq" className="hover:text-white transition-colors duration-300">FAQ</a>
-            <a href="#careers" className="hover:text-white transition-colors duration-300">Careers</a>
             <a href="#contact" className="hover:text-white transition-colors duration-300">Contact</a>
           </nav>
            <div className="flex justify-center gap-4">

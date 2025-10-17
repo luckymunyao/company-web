@@ -8,35 +8,35 @@ import TestimonialSkeleton from './TestimonialSkeleton';
 
 const testimonialsData: Testimonial[] = [
   {
-    quote: "Ability IT's cybersecurity solutions have been a game-changer for us. Their proactive approach gave us peace of mind. We feel more secure than ever.",
+    quote: "AbilityTech's cybersecurity solutions have been a game-changer for us. Their proactive approach gave us peace of mind. We feel more secure than ever.",
     name: 'Sarah Johnson',
     company: 'CEO of TechCorp',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704a',
     relatedService: 'Cybersecurity Solutions',
   },
   {
-    quote: "The managed IT services from Ability IT are exceptional. Their team is responsive, knowledgeable, and has significantly improved our system uptime. Highly recommended!",
+    quote: "The managed IT services from AbilityTech are exceptional. Their team is responsive, knowledgeable, and has significantly improved our system uptime. Highly recommended!",
     name: 'Michael Chen',
     company: 'Operations Director, Growth Solutions',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704b',
     relatedService: 'Managed IT Services',
   },
   {
-    quote: "Working with Ability IT on our digital marketing strategy has yielded incredible results. Their data-driven insights led to a 150% increase in our online leads within just three months.",
+    quote: "Working with AbilityTech on our digital marketing strategy has yielded incredible results. Their data-driven insights led to a 150% increase in our online leads within just three months.",
     name: 'Jessica Rodriguez',
     company: 'Marketing Manager, MarketPro',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704c',
     relatedService: 'Digital Marketing',
   },
   {
-    quote: "The UI/UX design for our new mobile app is fantastic. Ability IT captured our vision perfectly and created an intuitive experience that our users love.",
+    quote: "The UI/UX design for our new mobile app is fantastic. AbilityTech captured our vision perfectly and created an intuitive experience that our users love.",
     name: 'Emily White',
     company: 'Product Manager, ConnectApp',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704d',
     relatedService: 'UI/UX Design',
   },
   {
-    quote: "Migrating our entire infrastructure to the cloud was a massive undertaking, but Ability IT made it seamless. Their expertise and meticulous planning resulted in zero downtime.",
+    quote: "Migrating our entire infrastructure to the cloud was a massive undertaking, but AbilityTech made it seamless. Their expertise and meticulous planning resulted in zero downtime.",
     name: 'David Garcia',
     company: 'CTO, Cloud Nine Inc.',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704e',
@@ -50,21 +50,21 @@ const testimonialsData: Testimonial[] = [
     relatedService: 'AI & Machine Learning',
   },
   {
-    quote: "Ability IT developed a custom 3D rendering pipeline for our animation studio. The performance is incredible, and it has cut our production times by nearly 40%. Their expertise in graphics and software is unmatched.",
+    quote: "AbilityTech developed a custom 3D rendering pipeline for our animation studio. The performance is incredible, and it has cut our production times by nearly 40%. Their expertise in graphics and software is unmatched.",
     name: 'Leo Maxwell',
     company: 'Creative Director, Pixel Perfect Studios',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704g',
     relatedService: 'Software Development',
   },
   {
-    quote: "The data analytics dashboard built by Ability IT transformed our decision-making process. We can now visualize complex data in real-time, leading to a 20% improvement in operational efficiency.",
+    quote: "The data analytics dashboard built by AbilityTech transformed our decision-making process. We can now visualize complex data in real-time, leading to a 20% improvement in operational efficiency.",
     name: 'Carlos Gomez',
     company: 'COO, DataDriven Logistics',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704h',
     relatedService: 'Data Analysis & Insights',
   },
   {
-    quote: "Ability IT was instrumental in developing our decentralized finance platform. Their expertise in blockchain and smart contracts was top-notch, delivering a secure and transparent solution that our users trust.",
+    quote: "AbilityTech was instrumental in developing our decentralized finance platform. Their expertise in blockchain and smart contracts was top-notch, delivering a secure and transparent solution that our users trust.",
     name: 'Kenji Tanaka',
     company: 'Founder, DeFi Ledger',
     avatarUrl: 'https://i.pravatar.cc/60?u=a042581f4e29026704i',
@@ -152,7 +152,7 @@ const Testimonials: React.FC = () => {
       });
     }
     
-    history.replaceState(null, '', `#contact?service=${encodeURIComponent(serviceTitle)}`);
+    window.history.replaceState(null, '', `#contact?service=${encodeURIComponent(serviceTitle)}`);
     window.dispatchEvent(new HashChangeEvent('hashchange'));
   };
 

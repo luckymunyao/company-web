@@ -6,6 +6,7 @@ import UserCircleIcon from './icons/UserCircleIcon';
 import BuildingOfficeIcon from './icons/BuildingOfficeIcon';
 import InformationCircleIcon from './icons/InformationCircleIcon';
 import CheckCircleIcon from './icons/CheckCircleIcon';
+import SpinnerIcon from './icons/SpinnerIcon';
 
 const availableTimes = ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM'];
 
@@ -21,7 +22,8 @@ const Booking: React.FC = () => {
         details: ''
     });
     const [errors, setErrors] = useState<Partial<Record<keyof typeof bookingDetails, string>>>({});
-    const [formError, setFormError] = useState(''); // New state for step errors
+    const [formError, setFormError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const checkHash = () => {
@@ -52,7 +54,7 @@ const Booking: React.FC = () => {
     const daysInMonth = useMemo(() => new Date(currentYear, currentMonth + 1, 0).getDate(), [currentYear, currentMonth]);
     const firstDayOfMonth = useMemo(() => new Date(currentYear, currentMonth, 1).getDay(), [currentYear, currentMonth]);
 
-    const handleNextStep = () => {
+    const handleNextStep = async () => {
         let isValid = true;
         let errorMsg = '';
         if (step === 1 && !bookingDetails.service) {
@@ -72,6 +74,28 @@ const Booking: React.FC = () => {
                 isValid = false;
             } else {
                 setErrors({});
+                // If details are valid, proceed to submit
+                setIsSubmitting(true);
+                setFormError('');
+                try {
+                    await new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            if (bookingDetails.email.includes('error@')) {
+                                reject(new Error('Failed to confirm booking. Please try again.'));
+                            } else {
+                                console.log("Simulating booking submission:", bookingDetails);
+                                resolve('Success');
+                            }
+                        }, 1500);
+                    });
+                    // Success
+                    setStep(s => Math.min(s + 1, 4));
+                } catch (error) {
+                    setFormError(error instanceof Error ? error.message : 'An unexpected error occurred.');
+                } finally {
+                    setIsSubmitting(false);
+                }
+                return; // Exit here as we've handled the step change
             }
         }
         
@@ -214,6 +238,12 @@ const Booking: React.FC = () => {
                 return (
                     <div>
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">3. Your Details</h3>
+                        {formError && (
+                             <div key={formError} role="alert" className="flex items-center p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-900/30 dark:text-red-400 animate-shake">
+                                <span className="flex-shrink-0 w-5 h-5 mr-2"><InformationCircleIcon /></span>
+                                <span className="font-medium">{formError}</span>
+                            </div>
+                        )}
                         <div className="space-y-4">
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <div>
@@ -292,7 +322,7 @@ const Booking: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={handlePrevStep}
-                                disabled={step === 1}
+                                disabled={step === 1 || isSubmitting}
                                 className="px-5 py-2 text-sm font-semibold rounded-md transition-all duration-300 bg-slate-200 text-slate-700 hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Previous
@@ -300,9 +330,10 @@ const Booking: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={handleNextStep}
-                                className="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md"
+                                disabled={isSubmitting}
+                                className="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-md hover:bg-indigo-700 transition-all duration-300 shadow-md disabled:bg-indigo-400 disabled:cursor-wait flex items-center justify-center min-w-[120px]"
                             >
-                                {step === 3 ? 'Confirm Booking' : 'Next Step'}
+                                {isSubmitting ? <SpinnerIcon /> : step === 3 ? 'Confirm Booking' : 'Next Step'}
                             </button>
                         </div>
                     )}

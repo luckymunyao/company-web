@@ -77,7 +77,7 @@ const SolutionsExplorer: React.FC<SolutionsExplorerProps> = ({ trackInterest }) 
 
     // Update URL hash and manually trigger event for ContactForm to pick up the change.
     // This ensures the form is pre-filled without a harsh page jump.
-    history.replaceState(null, '', `#contact?service=${encodeURIComponent(serviceTitle)}`);
+    window.history.replaceState(null, '', `#contact?service=${encodeURIComponent(serviceTitle)}`);
     window.dispatchEvent(new HashChangeEvent('hashchange'));
   };
 
@@ -91,6 +91,13 @@ const SolutionsExplorer: React.FC<SolutionsExplorerProps> = ({ trackInterest }) 
         localStorage.setItem('servicePopularity', JSON.stringify(popularity));
     } catch (error) {
         console.error("Failed to track service popularity:", error);
+    }
+  }
+
+  const handleCategoryClick = (category: string) => {
+    setActiveCategory(category);
+    if (category !== 'All') {
+        trackInterest(category);
     }
   }
 
@@ -110,7 +117,7 @@ const SolutionsExplorer: React.FC<SolutionsExplorerProps> = ({ trackInterest }) 
                     {serviceCategories.map(category => (
                         <button
                             key={category}
-                            onClick={() => setActiveCategory(category)}
+                            onClick={() => handleCategoryClick(category)}
                             aria-pressed={activeCategory === category}
                             className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300 flex-shrink-0 active:scale-95 ${
                                 activeCategory === category 

@@ -4,6 +4,7 @@ import ChatBubbleIcon from './icons/ChatBubbleIcon';
 import PaperAirplaneIcon from './icons/PaperAirplaneIcon';
 import XIcon from './icons/XIcon';
 import BotIcon from './icons/BotIcon';
+import ArrowPathIcon from './icons/ArrowPathIcon';
 
 interface Message {
   text: string;
@@ -24,57 +25,72 @@ const responseSchema = {
       items: {
         type: Type.STRING
       }
+    },
+    serviceRecommendation: {
+        type: Type.STRING,
+        description: "If the response is about a specific AbilityTech service, provide the exact service title here (e.g., 'Managed IT Services'). Otherwise, leave empty."
     }
   },
   required: ['response', 'quickReplies']
 };
 
+const initialMessages: Message[] = [
+  { 
+    sender: 'bot', 
+    text: "Hello there! 👋",
+  },
+  { 
+    sender: 'bot', 
+    text: "I'm the AbilityTech virtual assistant. I can answer questions about our services like Managed IT, Custom Software, and more. What can I help you find?",
+    quickReplies: ['Cybersecurity', 'AI Solutions', 'UI/UX Design'] 
+  }
+];
 
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState('');
   const chatRef = useRef<Chat | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const toggleButtonRef = useRef<HTMLButtonElement>(null);
-  const chatInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement | null>(null);
+  const chatInputRef = useRef<HTMLInputElement | null>(null);
 
+  const initializeChat = () => {
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+      chatRef.current = ai.chats.create({
+        model: 'gemini-2.5-flash',
+        config: {
+          systemInstruction: `You are a helpful and friendly AI assistant for AbilityTech, a technology services company.
+          Your role is to answer user questions about the company's services, provide information, and guide them to the right sections of the website.
+          Keep your answers concise, professional, and helpful. You should be knowledgeable about managed IT services, cybersecurity solutions, software development, digital marketing, data analysis, cloud services, UI/UX design, AI & Machine Learning, Blockchain solutions, and other services offered by AbilityTech.
+          If a user asks for contact information or wants to speak to a person, provide the following details:
+          - Phone/WhatsApp: +254 798 996332
+          - Email: luckymunyao@gmail.com, munyaolucky@gmail.com, munyaolucky14@gmail.com
+          You can also direct them to the contact form or callback request feature on the website.
+          If a user asks a question outside of your scope, politely state that you are an assistant for AbilityTech and can only answer questions related to its business.
+          IMPORTANT: Your response MUST strictly be in JSON format, adhering to this schema: {"response": string, "quickReplies": string[], "serviceRecommendation": string}.
+          The 'response' field should contain your conversational reply.
+          The 'quickReplies' field should contain an array of 3-4 relevant, short (1-4 word) follow-up questions or topics a user might be interested in based on your response.
+          The 'serviceRecommendation' field MUST be populated with the exact title of a specific AbilityTech service IF AND ONLY IF your response is directly about that service (e.g., "Managed IT Services"). Otherwise, this field MUST be an empty string "".`,
+          responseMimeType: "application/json",
+          responseSchema: responseSchema,
+        },
+      });
+      setMessages(initialMessages);
+    } catch (error) {
+      console.error("Failed to initialize Gemini API:", error);
+      setMessages([
+        { sender: 'bot', text: "Sorry, I'm having trouble connecting right now. Please try again later." }
+      ]);
+    }
+  };
 
   useEffect(() => {
     if (isOpen && !chatRef.current) {
-      try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-        chatRef.current = ai.chats.create({
-          model: 'gemini-2.5-flash',
-          config: {
-            systemInstruction: `You are a helpful and friendly AI assistant for Ability IT, a technology services company.
-            Your role is to answer user questions about the company's services, provide information, and guide them to the right sections of the website.
-            Keep your answers concise, professional, and helpful. You should be knowledgeable about managed IT services, cybersecurity solutions, software development, digital marketing, data analysis, cloud services, UI/UX design, AI & Machine Learning, Blockchain solutions, and other services offered by Ability IT.
-            If a user asks a question outside of your scope, politely state that you are an assistant for Ability IT and can only answer questions related to its business.
-            IMPORTANT: Your response MUST strictly be in JSON format, adhering to this schema: {"response": string, "quickReplies": string[]}. The 'response' field should contain your conversational reply. The 'quickReplies' field should contain an array of 3-4 relevant, short (1-4 word) follow-up questions or topics a user might be interested in based on your response.`,
-            responseMimeType: "application/json",
-            responseSchema: responseSchema,
-          },
-        });
-        setMessages([
-          { 
-            sender: 'bot', 
-            text: "Hello there! 👋",
-          },
-          { 
-            sender: 'bot', 
-            text: "I'm the Ability IT virtual assistant. I can answer questions about our services like Managed IT, Custom Software, and more. What can I help you find?",
-            quickReplies: ['Cybersecurity', 'AI Solutions', 'UI/UX Design'] 
-          }
-        ]);
-      } catch (error) {
-        console.error("Failed to initialize Gemini API:", error);
-        setMessages([
-          { sender: 'bot', text: "Sorry, I'm having trouble connecting right now. Please try again later." }
-        ]);
-      }
+      initializeChat();
     }
   }, [isOpen]);
   
@@ -101,25 +117,45 @@ const Chatbot: React.FC = () => {
     try {
       const response = await chatRef.current.sendMessage({ message: messageText });
       const responseText = response.text;
+      let json;
       
       try {
-        const json = JSON.parse(responseText);
-        botResponse = {
-          sender: 'bot',
-          text: json.response || "I'm not sure how to answer that.",
-          quickReplies: json.quickReplies || [],
-        };
-      } catch (jsonError) {
-        console.warn("Could not parse Gemini response as JSON. Using raw text.", jsonError);
-        botResponse = {
-          sender: 'bot',
-          text: responseText,
-          quickReplies: [],
-        };
+        json = JSON.parse(responseText);
+      } catch (parseError) {
+        console.warn("Could not parse Gemini response as JSON. Response was:", responseText, parseError);
+        throw new Error("Invalid JSON response from AI.");
       }
-    } catch (apiError) {
-      console.error("Gemini API error:", apiError);
-      botResponse = { text: "I'm sorry, but I encountered an error. Please try again.", sender: 'bot' };
+      
+      // Validate the parsed JSON structure
+      if (typeof json.response !== 'string' || !Array.isArray(json.quickReplies)) {
+        console.warn("Gemini response is missing required fields or has incorrect types. Response was:", json);
+        throw new Error("Missing or invalid required fields in AI response.");
+      }
+
+      const replies = json.quickReplies;
+
+      // If a service is recommended, add it as the first quick reply
+      if (json.serviceRecommendation && typeof json.serviceRecommendation === 'string' && json.serviceRecommendation.trim() !== '') {
+          const recommendationText = json.serviceRecommendation.trim();
+          // Avoid adding duplicates
+          if (!replies.includes(recommendationText)) {
+              replies.unshift(recommendationText);
+          }
+      }
+
+      botResponse = {
+        sender: 'bot',
+        text: json.response,
+        quickReplies: replies,
+      };
+
+    } catch (error) {
+      console.error("Chatbot error:", error);
+      botResponse = { 
+          text: "I'm having a little trouble formulating a response right now. Could you please try rephrasing your question?", 
+          sender: 'bot',
+          quickReplies: ['Our Services', 'About Us', 'Contact Info']
+      };
     } finally {
         setMessages(prev => [...prev, botResponse]);
         setIsLoading(false);
@@ -136,6 +172,13 @@ const Chatbot: React.FC = () => {
     setIsOpen(!wasOpen);
     if (wasOpen) {
         toggleButtonRef.current?.focus();
+    }
+  };
+
+  const handleResetChat = () => {
+    if (window.confirm("Are you sure you want to start a new conversation? Your current chat history will be lost.")) {
+        chatRef.current = null;
+        initializeChat();
     }
   };
 
@@ -166,8 +209,16 @@ const Chatbot: React.FC = () => {
         aria-hidden={!isOpen}
         aria-labelledby="chatbot-title"
       >
-        <header className="flex-shrink-0 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-t-2xl border-b border-slate-200 dark:border-slate-700">
-          <h3 id="chatbot-title" className="text-lg font-bold text-slate-800 dark:text-white text-center">Ability IT AI Assistant</h3>
+        <header className="relative flex-shrink-0 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-t-2xl border-b border-slate-200 dark:border-slate-700">
+          <button
+            onClick={handleResetChat}
+            className="absolute left-3 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors rounded-full"
+            aria-label="Start new conversation"
+            title="Start new conversation"
+          >
+            <ArrowPathIcon />
+          </button>
+          <h3 id="chatbot-title" className="text-lg font-bold text-slate-800 dark:text-white text-center">AbilityTech AI Assistant</h3>
         </header>
 
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4" aria-live="polite">
